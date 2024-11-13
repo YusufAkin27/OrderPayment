@@ -1,8 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderPayment.Models;
+using OrderPayment.Models.request;
 using YourProjectNamespace.Models;
+using ForgotPasswordRequest = OrderPayment.Models.request.ForgotPasswordRequest;
+using ResetPasswordRequest = OrderPayment.Models.request.ResetPasswordRequest;
+using RegisterRequest = OrderPayment.Models.request.RegisterRequest;
 
+
+[Route("User/[action]")]
 public class UserController : Controller
 {
     private readonly SmsService _smsService;
@@ -14,11 +21,30 @@ public class UserController : Controller
         _context = context;
     }
 
-	[HttpGet]
+    [HttpGet]
     public ActionResult UserHome()
     {
         var products = _context.products.ToList();
         return View(products);
+
+    }
+   
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult VerifyForgotPasswordCode()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult ResetPassword()
+    {
+        return View();
     }
 
     [HttpGet]
@@ -46,34 +72,34 @@ public class UserController : Controller
 
 
     [HttpPost]
-    public IActionResult Register(User user)
+    public IActionResult Register(RegisterRequest registerRequest)
     {
         // Telefon numarasının boş olup olmadığı kontrolü
-        if (string.IsNullOrWhiteSpace(user.PhoneNumber))
+        if (string.IsNullOrWhiteSpace(registerRequest.PhoneNumber))
         {
             return Json(new { success = false, message = "Telefon numarası gereklidir." });
         }
 
         // Şifre kontrolü (en az 6 karakter)
-        if (string.IsNullOrWhiteSpace(user.Password) || user.Password.Length < 6)
+        if (string.IsNullOrWhiteSpace(registerRequest.Password) || registerRequest.Password.Length < 6)
         {
             return Json(new { success = false, message = "Şifre en az 6 karakter uzunluğunda olmalıdır." });
         }
 
         // Telefon numarasına göre kullanıcı kontrolü
-        if (_context.Users.Any(u => u.PhoneNumber == user.PhoneNumber))
+        if (_context.Users.Any(u => u.PhoneNumber == registerRequest.PhoneNumber))
         {
             return Json(new { success = false, message = "Bu telefon numarasıyla zaten kayıtlı bir kullanıcı var." });
         }
 
         // Şifreyi hash'le
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
+        var PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
 
         // Doğrulama kodu oluştur
         var verificationCode = GenerateVerificationCode();
 
         // SMS mesajı oluştur
-        var message = $"Sayın {user.FirstName} {user.LastName},\n\n" +
+        var message = $"Sayın {registerRequest.FirstName} {registerRequest.LastName},\n\n" +
             "Hesabınızın güvenliği için aşağıdaki doğrulama kodunu kullanarak işleminizi tamamlayabilirsiniz:\n\n" +
             $"Doğrulama Kodu: {verificationCode}\n\n" +
             "Lütfen kodunuzu en kısa sürede giriniz. Kodunuzun geçerlilik süresi sınırlıdır.\n\n" +
@@ -82,14 +108,23 @@ public class UserController : Controller
             "Hizmet Sağlayıcınız";
 
         // SMS gönderimi
-        if (!_smsService.SendSms(user.PhoneNumber, message))
+        if (!_smsService.SendSms(registerRequest.PhoneNumber, message))
         {
             return Json(new { success = false, message = "SMS gönderilemedi. Lütfen daha sonra tekrar deneyin." });
         }
 
-        // Kullanıcıyı kaydet
-        user.IsActive = false; // Kullanıcı aktif değil
+        User user=new User();
+
         user.CreatedAt = DateTime.UtcNow;
+        user.IsActive = false;
+        user.FirstName =registerRequest.FirstName;
+        user.LastName =registerRequest.LastName;
+        user.PhoneNumber = registerRequest.PhoneNumber;
+        user.Password=registerRequest.Password;
+        user.PasswordHash = PasswordHash;
+
+        // Kullanıcıyı kaydet
+       
 
         _context.Users.Add(user);
         _context.SaveChanges();
@@ -107,7 +142,7 @@ public class UserController : Controller
         _context.SaveChanges();
 
         // Session'a kullanıcı bilgisi kaydet
-        HttpContext.Session.SetString("User", JsonConvert.SerializeObject(user, new JsonSerializerSettings
+        HttpContext.Session.SetString("User", JsonConvert.SerializeObject(registerRequest, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         }));
@@ -441,5 +476,159 @@ public class UserController : Controller
         // Giriş işlemi başarılı, ana sayfaya yönlendir
         return Json(new { success = true, message = "Doğrulama başarılı, giriş yapıldı.", redirectUrl = Url.Action("Index", "Home") });
     }
+
+    [HttpPost]
+    public IActionResult ForgotPassword([FromBody] ForgotPasswordRequest forgotPasswordRequest)
+    {
+        // Model doğrulaması
+        if (!ModelState.IsValid)
+        {
+            return Json(new { success = false, message = "Lütfen geçerli bir telefon numarası giriniz." });
+        }
+
+        // Kullanıcıyı telefon numarasına göre ara
+        var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == forgotPasswordRequest.PhoneNumber);
+
+        // Kullanıcı bulunamazsa hata mesajı döndür
+        if (user == null)
+        {
+            return Json(new { success = false, message = "Bu telefon numarasına kayıtlı bir kullanıcı bulunamadı." });
+        }
+
+        // Kullanıcı aktif değilse hata döndür
+        if (!user.IsActive)
+        {
+            return Json(new { success = false, message = "Hesabınız doğrulanmamış. Şifrenizi sıfırlayabilmek için önce hesabınızı doğrulayın." });
+        }
+
+        // Doğrulama kodu oluştur
+        var verificationCode = GenerateVerificationCode();
+
+        // SMS mesajı
+        var message = $"Sayın {user.FirstName} {user.LastName},\n\n" +
+                      "Şifrenizi sıfırlayabilmeniz için doğrulama kodunuz aşağıda belirtilmiştir:\n\n" +
+                      $"Doğrulama Kodu: {verificationCode}\n\n" +
+                      "Bu kod 3 dakika boyunca geçerlidir. Lütfen bu süre içinde şifre sıfırlama işlemini tamamlayınız.\n\n" +
+                      "İyi günler dileriz,\n" +
+                      "Destek Ekibi";
+
+        // SMS gönderimi
+        if (!_smsService.SendSms(user.PhoneNumber, message))
+        {
+            return Json(new { success = false, message = "Doğrulama kodu gönderilemedi. Lütfen daha sonra tekrar deneyin." });
+        }
+
+        // Doğrulama kodunu veritabanına kaydet
+        var newVerification = new VerificationCode
+        {
+            UserId = user.Id,
+            Code = verificationCode,
+            SentAt = DateTime.UtcNow,
+            ExpiryInSeconds = 180 // Kodun geçerlilik süresi 3 dakika
+        };
+        _context.VerificationCodes.Add(newVerification);
+
+        // Kullanıcı bilgilerini HTTP oturumuna kaydet
+        HttpContext.Session.SetString("ForgotPasswordUser", JsonConvert.SerializeObject(user, new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        }));
+
+        // Veritabanı işlemlerini kaydet
+        _context.SaveChanges();
+
+        return Json(new { success = true, message = "Doğrulama kodu başarıyla gönderildi." });
+    }
+
+
+    [HttpPost]
+    public IActionResult VerifyForgotPasswordCode(string verificationCode)
+    {
+        // Session'dan kullanıcı bilgisini al
+        var userJson = HttpContext.Session.GetString("ForgotPasswordUser");
+
+        // Eğer session'da kullanıcı bilgisi yoksa hata döndür
+        if (string.IsNullOrEmpty(userJson))
+        {
+            return Json(new { success = false, message = "Geçersiz kullanıcı oturumu. Lütfen tekrar şifre sıfırlama işlemini başlatın." });
+        }
+
+        // JSON verisini User nesnesine dönüştür
+        var user = JsonConvert.DeserializeObject<User>(userJson);
+        if (user == null)
+        {
+            return Json(new { success = false, message = "Kullanıcı bilgisi bulunamadı!" });
+        }
+
+        // Kullanıcının doğrulama kodunu veritabanında ara
+        var verification = _context.VerificationCodes
+            .Where(vc => vc.UserId == user.Id && vc.Code == verificationCode)
+            .OrderByDescending(vc => vc.SentAt) // En son gönderilen kodu alır
+            .FirstOrDefault();
+
+        // Doğrulama kodu yoksa veya süresi dolmuşsa hata döndür
+        if (verification == null || verification.IsExpired())
+        {
+            return Json(new { success = false, message = "Geçersiz veya süresi dolmuş doğrulama kodu." });
+        }
+
+        // Kod geçerli ise kullanıcıyı doğrulama başarılı olarak kabul et
+        // Doğrulama kodunu geçersiz hale getir
+        verification.ExpiryInSeconds = 0; // Kodu geçersiz yap
+        _context.VerificationCodes.Update(verification);
+        _context.SaveChanges();
+
+        // Kullanıcı bilgilerini ResetPassword işlemi için session'da sakla
+        HttpContext.Session.SetString("ResetPasswordUser", JsonConvert.SerializeObject(user));
+
+        // Doğrulama başarılı, ResetPassword sayfasına yönlendir
+        return Json(new { success = true, message = "Doğrulama başarılı! Şifre sıfırlama sayfasına yönlendiriliyorsunuz.", redirectUrl = Url.Action("ResetPassword", "User") });
+    }
+
+
+    [HttpPost]
+    public IActionResult ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
+    {
+        // Model doğrulaması
+        if (!ModelState.IsValid || string.IsNullOrWhiteSpace(resetPasswordRequest.Password))
+        {
+            return Json(new { success = false, message = "Geçerli bir şifre giriniz." });
+        }
+
+        // Kullanıcı bilgilerini session'dan al
+        var userJson = HttpContext.Session.GetString("ResetPasswordUser");
+
+        // Eğer session'da kullanıcı bilgisi yoksa hata döndür
+        if (string.IsNullOrEmpty(userJson))
+        {
+            return Json(new { success = false, message = "Şifre sıfırlama oturumunuz geçersiz. Lütfen işlemi yeniden başlatın." });
+        }
+
+        // JSON verisini User nesnesine dönüştür
+        var user = JsonConvert.DeserializeObject<User>(userJson);
+        if (user == null)
+        {
+            return Json(new { success = false, message = "Kullanıcı bulunamadı." });
+        }
+
+        // Kullanıcının veritabanındaki kaydını al
+        var dbUser = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+        if (dbUser == null)
+        {
+            return Json(new { success = false, message = "Kullanıcı bilgisi doğrulanamadı." });
+        }
+
+        // Yeni şifreyi hash'leyerek kaydet
+        dbUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPasswordRequest.Password);
+        _context.Users.Update(dbUser);
+        _context.SaveChanges();
+
+        // Session'daki kullanıcı bilgisini temizle
+        HttpContext.Session.Remove("ResetPasswordUser");
+
+        // Şifre sıfırlama işlemi başarılı
+        return Json(new { success = true, message = "Şifreniz başarıyla sıfırlandı! Artık yeni şifrenizle giriş yapabilirsiniz.", redirectUrl = Url.Action("Login", "User") });
+    }
+
 
 }

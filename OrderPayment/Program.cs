@@ -34,11 +34,16 @@ builder.Services.AddSession(options =>
 var app = builder.Build();
 
 // Hata iþleme ve güvenlik yapýlandýrmalarý
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage(); // Geliþtirme ortamýnda hata mesajlarýný göster
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -53,7 +58,7 @@ app.UseAuthorization();
 // Varsayýlan rota ayarýný SmsController'daki SendSms action'ýna yönlendirin
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=User}/{action=Register}/{id?}"
+    pattern: "{controller=User}/{action=ForgotPassword}/{id?}"
 );
 
 app.Run();

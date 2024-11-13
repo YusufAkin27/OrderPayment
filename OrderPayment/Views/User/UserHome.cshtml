@@ -1,78 +1,64 @@
-﻿@model IEnumerable<OrderPayment.Models.Product>
-
-<!-- Sayfa Başlığı -->
-<h2 class="page-title">Ürün Satışı</h2>
-
-<link rel="stylesheet" href="~/css/UserHome.css" />
-
-<!-- Ürün Listesi ve Sepet -->
-<div class="shopping-container">
-    <div class="product-list">
-        @if (Model != null && Model.Any())
-        {
-            @foreach (var product in Model)
-            {
-                <div class="product-item">
-                    <!-- Ürün Adı -->
-                    <h3>@product.Name</h3>
-
-                    <!-- Ürün Resmi -->
-                    <div class="product-image-container">
-                        @if (!string.IsNullOrEmpty(product.Image))
-                        {
-                            <img src="@(product.Image)" alt="Ürün Resmi" class="product-image">
-                        }
-                        else
-                        {
-                            <p class="no-image-text">Resim yok</p>
-                        }
-                    </div>
-
-                    <!-- Ürün Fiyatı -->
-                    <p class="price">Fiyat: @product.Price.ToString("C")</p>
-
-                    <!-- Kategori ve Stok Miktarı -->
-                    <p class="category">Kategori: @product.Category</p>
-                    <p class="quantity">Stok: @product.Quantity</p>
-
-                    <!-- Sepete Ekle Butonu -->
-                    <button class="add-to-cart-btn" onclick="addToCart('@product.Id', '@product.Name', @product.Price)">Sepete Ekle</button>
-                </div>
-            }
-        }
-        else
-        {
-            <p>Ürün bulunamadı.</p>
-        }
-    </div>
-
-    <!-- Sepet Butonu -->
-    <button class="cart-button" onclick="toggleCart()">Sepetim</button>
-
-    <!-- Sepet Paneli -->
-    <div id="cart-panel" class="cart-panel">
-        <h2>Sepet</h2>
-        <div id="cart" class="cart">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ürün Adı</th>
-                        <th>Adet</th>
-                        <th>Fiyat</th>
-                        <th>Toplam</th>
-                        <th>İşlem</th>
-                    </tr>
-                </thead>
-                <tbody id="cart-items">
-                    <!-- Sepet ürünleri burada listelenecek -->
-                </tbody>
-            </table>
-            <p id="total-price">Genel Toplam: 0.00 ₺</p>
-            <button onclick="toggleCart()" class="close-cart">Sepeti Kapat</button>
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern ve Sade Tasarım</title>
+    <link rel="stylesheet" href="~/css/UserHome.css" />
+</head>
+<body>
+    <header>
+        <div class="logo">LOGO</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Ara..." />
         </div>
-    </div>
+        <div class="icons">
+            <span>🛒</span>
+            <span>👤</span>
+        </div>
+    </header>
 
-</div>
+    <nav>
+        <ul>
+            <li><a href="#">Ana Sayfa</a></li>
+            <li><a href="#">Ürünler</a></li>
+            <li><a href="#">Kampanyalar</a></li>
+            <li><a href="#">Hakkımızda</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <h1>Hoş Geldiniz</h1>
+            <p>En iyi ürünler burada!</p>
+            <button>Keşfet</button>
+        </section>
+
+        <section class="product-list">
+            <article class="product-card">
+                <img src="product1.jpg" alt="Ürün 1" />
+                <h3>Ürün Adı</h3>
+                <p>₺100,00</p>
+            </article>
+            <article class="product-card">
+                <img src="product2.jpg" alt="Ürün 2" />
+                <h3>Ürün Adı</h3>
+                <p>₺150,00</p>
+            </article>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Modern Tasarım. Tüm hakları saklıdır.</p>
+        <div class="social-media">
+            <a href="#">Facebook</a>
+            <a href="#">Twitter</a>
+            <a href="#">Instagram</a>
+        </div>
+    </footer>
+</body>
+</html>
+
 
 <!-- JavaScript Dosyası -->
 <script src="~/js/UserHome.js"></script>

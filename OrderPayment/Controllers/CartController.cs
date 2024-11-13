@@ -16,6 +16,84 @@ namespace OrderPayment.Controllers
             _context = context;
         }
 
+
+        [HttpPost]
+        public IActionResult AddToCart(int productId, int quantity = 1)
+        {
+            try
+            {
+                // Kullanıcı oturumunu kontrol et
+                var userJson = HttpContext.Session.GetString("LoggedInUser");
+
+                if (string.IsNullOrEmpty(userJson))
+                {
+                    return Json(new { success = false, message = "Lütfen giriş yapın." });
+                }
+
+                var user = JsonConvert.DeserializeObject<User>(userJson);
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Geçersiz oturum. Tekrar giriş yapın." });
+                }
+
+                // Kullanıcının sepetini al veya oluştur
+                var cart = _context.Carts
+                    .Include(c => c.CartItems)
+                    .FirstOrDefault(c => c.UserId == user.Id);
+
+                if (cart == null)
+                {
+                    cart = new Cart
+                    {
+                        UserId = user.Id,
+                        CreatedAt = DateTime.UtcNow,
+                        CartItems = new List<CartItem>()
+                    };
+                    _context.Carts.Add(cart);
+                    _context.SaveChanges();
+                }
+
+                // Ürün var mı kontrol et
+                var product = _context.products.FirstOrDefault(p => p.Id == productId);
+                if (product == null)
+                {
+                    return Json(new { success = false, message = "Ürün bulunamadı." });
+                }
+
+                // Sepette ürün var mı kontrol et
+                var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+                if (cartItem != null)
+                {
+                    // Ürün sepette mevcutsa miktarı artır
+                    cartItem.Quantity += quantity;
+                }
+                else
+                {
+                    // Yeni ürün ekle
+                    cartItem = new CartItem
+                    {
+                        CartId = cart.Id,
+                        ProductId = productId,
+                        Quantity = quantity,
+                        Price = product.Price
+                    };
+                    cart.CartItems.Add(cartItem);
+                }
+
+                // Değişiklikleri kaydet
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Ürün sepete eklendi!", cart });
+            }
+            catch (Exception ex)
+            {
+                // Genel hata işleme
+                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
+            }
+        }
+
+
         // Sepeti göster (GET isteği)
         [HttpGet]
         public IActionResult Cart()
