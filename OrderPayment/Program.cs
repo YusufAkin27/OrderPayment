@@ -53,7 +53,7 @@ app.UseAuthorization();
 // Varsayýlan rota ayarýný SmsController'daki SendSms action'ýna yönlendirin
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=User}/{action=Login}/{id?}"
+    pattern: "{controller=User}/{action=Register}/{id?}"
 );
 
 app.Run();
