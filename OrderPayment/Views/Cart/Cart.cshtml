@@ -1,0 +1,66 @@
+﻿@model OrderPayment.Models.Cart
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Ticaret Sepet Sayfası</title>
+    <link rel="stylesheet" href="~/css/Cart.css">
+</head>
+<body>
+
+    <div class="cart-container">
+        <h1>Sepetiniz</h1>
+
+        <!-- Ürün Listesi -->
+        <div class="cart-items">
+            @if (Model.CartItems != null && Model.CartItems.Count > 0)
+            {
+                foreach (var item in Model.CartItems)
+                {
+                    <div class="cart-item" id="item-@item.Product.Id">
+                        <img src="@item.Product.Image" alt="@item.Product.Name" />
+                        <div class="item-details">
+                            <p>@item.Product.Name</p>
+                            <p>Fiyat: <span class="price" data-price="@item.Product.Price">@item.Product.Price</span> TL</p>
+                            <p>
+                                Miktar:
+                                <button class="btn-change-quantity" onclick="changeQuantity('@item.Product.Id', 1)">+</button>
+                                <span id="quantity-@item.Product.Id">@item.Quantity</span>
+                                <button class="btn-change-quantity" onclick="changeQuantity('@item.Product.Id', -1)">-</button>
+                            </p>
+                            <p>Toplam Fiyat: <span id="total-price-@item.Product.Id">@item.Product.Price * @item.Quantity</span> TL</p>
+                            <button class="btn-remove" onclick="removeItem('@item.Product.Id')">Sil</button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Sepetinizde ürün bulunmamaktadır.</p>
+            }
+        </div>
+
+        <!-- Sepet Toplamı ve Ödeme -->
+        <div class="cart-summary">
+            <p>Toplam Tutar: <span id="totalAmount">0 TL</span></p>
+            <p>KDV: <span id="tax">0 TL</span></p>
+            <p>İndirim: <span id="discount">0 TL</span></p>
+            <p><strong>Ödenecek Tutar: <span id="finalAmount">0 TL</span></strong></p>
+
+            <!-- Ödeme Yöntemi -->
+            <div class="payment-methods">
+                <label><input type="radio" name="payment" value="credit-card"> Kredi Kartı</label>
+                <label><input type="radio" name="payment" value="bank-transfer"> Banka Havalesi</label>
+                <label><input type="radio" name="payment" value="cash-on-delivery"> Kapıda Ödeme</label>
+            </div>
+
+            <button class="btn-complete-order" onclick="completeOrder()">Siparişi Tamamla</button>
+        </div>
+
+    </div>
+
+    <script src="~/js/Cart.js"></script>
+</body>
+</html>

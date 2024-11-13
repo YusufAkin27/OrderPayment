@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Navbar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* Genel Stil */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f4f4;
+        }
+
+        /* Navbar Stil */
+        .navbar {
+            width: 100%;
+            background-color: #333;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+            /* Logo */
+            .navbar .logo {
+                font-size: 24px;
+                font-weight: bold;
+                margin-right: 30px;
+                color: white;
+                text-decoration: none;
+            }
+
+            /* Menü Linkleri */
+            .navbar .menu {
+                display: flex;
+                gap: 20px;
+            }
+
+                .navbar .menu a {
+                    color: white;
+                    text-decoration: none;
+                    font-size: 16px;
+                    padding: 5px 10px;
+                    transition: background-color 0.3s;
+                }
+
+                    .navbar .menu a:hover {
+                        background-color: #555;
+                        border-radius: 5px;
+                    }
+
+                /* Dropdown Menü - Ana Menü */
+                .navbar .menu .dropdown {
+                    position: relative;
+                }
+
+                .navbar .menu .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 30px;
+                    background-color: white;
+                    min-width: 200px;
+                    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                    z-index: 1;
+                }
+
+                    .navbar .menu .dropdown-content a {
+                        color: black;
+                        padding: 10px;
+                        text-decoration: none;
+                        display: block;
+                        transition: background-color 0.3s;
+                    }
+
+                        .navbar .menu .dropdown-content a:hover {
+                            background-color: #f1f1f1;
+                        }
+
+                .navbar .menu .dropdown:hover .dropdown-content {
+                    display: block;
+                }
+
+            /* Arama Çubuğu */
+            .navbar .search-bar {
+                position: relative;
+                flex: 1;
+                max-width: 300px;
+                margin: 0 20px;
+            }
+
+                .navbar .search-bar input[type="text"] {
+                    width: 100%;
+                    padding: 8px 40px 8px 15px;
+                    border: none;
+                    border-radius: 5px;
+                    outline: none;
+                    font-size: 16px;
+                }
+
+                .navbar .search-bar button {
+                    position: absolute;
+                    right: 5px;
+                    top: 5px;
+                    background: none;
+                    border: none;
+                    color: #333;
+                    font-size: 18px;
+                    cursor: pointer;
+                }
+
+            /* Kullanıcı Alanı */
+            .navbar .user-area {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+                .navbar .user-area .icon {
+                    font-size: 20px;
+                    cursor: pointer;
+                    position: relative;
+                }
+
+                    .navbar .user-area .icon .badge {
+                        position: absolute;
+                        top: -5px;
+                        right: -5px;
+                        background-color: #e74c3c;
+                        color: white;
+                        font-size: 12px;
+                        padding: 2px 5px;
+                        border-radius: 50%;
+                    }
+
+                /* Kullanıcı Dropdown */
+                .navbar .user-area .dropdown-content {
+                    display: none;
+                    position: absolute;
+                    top: 30px;
+                    right: 0;
+                    background-color: white;
+                    min-width: 180px;
+                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+                    border-radius: 5px;
+                }
+
+                    .navbar .user-area .dropdown-content a {
+                        color: black;
+                        padding: 12px;
+                        text-decoration: none;
+                        display: block;
+                        transition: background-color 0.3s;
+                    }
+
+                        .navbar .user-area .dropdown-content a:hover {
+                            background-color: #f1f1f1;
+                        }
+
+                .navbar .user-area:hover .dropdown-content {
+                    display: block;
+                }
+
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <!-- Logo -->
+        <a href="#" class="logo">E-Shop</a>
+
+        <!-- Menü Linkleri -->
+        <div class="menu">
+            <a href="#">Ana Sayfa</a>
+
+            <!-- Ürünler Dropdown -->
+            <div class="dropdown">
+                <a href="#">Ürünler</a>
+               
+            </div>
+
+            <!-- Kategoriler Dropdown -->
+            <div class="dropdown">
+                <a href="#">Kategoriler</a>
+                <div class="dropdown-content">
+                    <a href="#"> SütÜrünleri </a>
+                    <a href="#"> EtÜrünleri</a>
+                    <a href="#">Meyveler</a>
+                    <a href="#">Sebzeler</a>
+                </div>
+            </div>
+
+            <!-- İletişim -->
+            <a href="#">İletişim</a>
+        </div>
+
+        <!-- Arama Çubuğu -->
+        <div class="search-bar">
+            <input type="text" placeholder="Ürün ara...">
+            <button><i class="fas fa-search"></i></button>
+        </div>
+
+        <!-- Kullanıcı Alanı -->
+        <div class="user-area">
+            <!-- Favoriler -->
+            <div class="icon">
+                <i class="fas fa-heart"></i>
+                <span class="badge">5</span>
+            </div>
+
+            <!-- Sepet -->
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="badge">2</span>
+            </div>
+
+            <!-- Kullanıcı Dropdown -->
+            <div class="dropdown">
+                <div class="icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="dropdown-content">
+                    <a href="#">Profil</a>
+                    <a href="#">Siparişlerim</a>
+                    <a href="#">Ayarlar</a>
+                    <a href="#">Çıkış</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+</body>
+</html>

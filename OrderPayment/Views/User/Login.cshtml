@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Login.css" />
+
+</head>
+<body>
+
+    <div class="container">
+        <h1>Giriş Yap</h1>
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="phone">Telefon Numarası</label>
+                <input type="tel" id="phone" name="phone" placeholder="5xxxxxxxxx" required>
+            </div>
+            <div class="input-group password-toggle">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" placeholder="Şifreniz" required>
+                <span class="toggle-btn" onclick="togglePassword()">
+                    <i class="fas fa-eye"></i>
+                </span>
+            </div>
+            <button type="submit">Giriş Yap</button>
+            <div id="error-message"></div>
+        </form>
+
+        <div class="additional-links">
+            <a href="#">Şifrenizi mi unuttunuz?</a> | <a href="#">Kayıt Ol</a>
+        </div>
+    </div>
+
+    <script  src="~/js/Login.js"></script>
+
+</body>
+</html>

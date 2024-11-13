@@ -1,0 +1,194 @@
+﻿ /* Sayfa Arka Planı */
+    body {
+        background-color: #f4f4f9; /* Hafif gri-mavi tonunda arka plan */
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Sayfa Başlığı */
+    .page-title {
+        text-align: center;
+        font-size: 2.5em;
+        color: #333;
+        margin-top: 30px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-weight: bold;
+    }
+
+    /* Genel Düzen */
+    .shopping-container {
+        display: flex;
+        position: relative;
+        margin: 30px;
+        justify-content: space-between;
+    }
+
+    /* Ürün Listesi */
+    .product-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        padding: 20px;
+        flex: 0 0 75%;
+    }
+
+    /* Ürün Kutusu */
+    .product-item {
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 15px;
+        width: 250px;
+        text-align: center;
+        background-color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+        .product-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-item h3 {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 10px;
+            text-transform: capitalize;
+        }
+
+    /* Ürün Resmi */
+    .product-image-container {
+        margin-bottom: 15px;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .no-image-text {
+        font-style: italic;
+        color: #888;
+    }
+
+    /* Fiyat, Kategori, Stok */
+    .price {
+        font-size: 1.1em;
+        color: #27ae60;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .category, .quantity {
+        color: #555;
+        font-size: 0.9em;
+        margin-bottom: 10px;
+    }
+
+    /* Sepete Ekle Butonu */
+    .add-to-cart-btn {
+        background-color: #f39c12;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 1.1em;
+        transition: background-color 0.3s ease;
+    }
+
+        .add-to-cart-btn:hover {
+            background-color: #e67e22;
+        }
+
+    /* Sepet Butonu - Sola Kaydırıldı */
+    .cart-button {
+        position: fixed;
+        top: 20px;
+        left: 20px; /* Butonu sola kaydırdık */
+        background-color: #3498db;
+        color: white;
+        padding: 15px;
+        border: none;
+        border-radius: 5px;
+        font-size: 1.2em;
+        transition: background-color 0.3s ease;
+    }
+
+        .cart-button:hover {
+            background-color: #2980b9;
+        }
+
+    /* Sepet Paneli */
+    .cart-panel {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 100%;
+        background-color: #fff;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
+        overflow-x: hidden;
+        transition: 0.5s;
+        padding: 30px;
+        box-sizing: border-box;
+        z-index: 1000;
+    }
+
+        .cart-panel.open {
+            width: 350px;
+        }
+
+        .cart-panel h2 {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Sepet İçeriği */
+        .cart-panel .cart {
+            text-align: left;
+        }
+
+        .cart-panel table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cart-panel th, .cart-panel td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        .cart-panel th {
+            background-color: #f2f2f2;
+        }
+
+    #total-price {
+        font-size: 1.2em;
+        color: #333;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .close-cart {
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        width: 100%;
+        border-radius: 4px;
+        font-size: 1.2em;
+        margin-top: 20px;
+    }
+
+        .close-cart:hover {
+            background-color: #c0392b;
+        }
