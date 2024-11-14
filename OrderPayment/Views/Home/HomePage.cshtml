@@ -1,7 +1,27 @@
-﻿@* HomePage.cshtml *@
+﻿@model IEnumerable<OrderPayment.Models.Product>
+
 @await Html.PartialAsync("UserNavbar")
 
 <div class="container mt-4">
     <h2>Ürün Listesi</h2>
-    @* Ürünleri burada listeleyin *@
+
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <img src="@product.Image" class="card-img-top" alt="Ürün Resmi" />
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">
+                            @product.Price.ToString("C")<br />
+                            Kategori: @product.Category<br />
+                            Miktar: @product.Quantity @product.Unit
+                        </p>
+                        <a href="#" class="btn btn-primary">Sepete Ekle</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

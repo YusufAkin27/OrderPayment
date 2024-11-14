@@ -13,13 +13,14 @@ namespace OrderPayment.Controllers
             _context = context;
         }
 
-
         [HttpGet]
         public ActionResult HomePage()
         {
-            return View();
-
+            var products = _context.products.ToList();
+            return View(products);
         }
+
+
         // Ana Sayfa: Tüm Ürünleri Listele
         public async Task<IActionResult> HomePage(int page = 1, int pageSize = 10)
         {

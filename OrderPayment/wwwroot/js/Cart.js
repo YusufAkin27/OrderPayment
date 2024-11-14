@@ -41,11 +41,6 @@ function updateCart() {
 }
 
 function completeOrder() {
-    const selectedPayment = document.querySelector('input[name="payment"]:checked');
-    if (!selectedPayment) {
-        alert("Lütfen bir ödeme yöntemi seçin.");
-        return;
-    }
-
-    alert("Siparişiniz tamamlandı! Ödeme yöntemi: " + selectedPayment.value);
+    // Sepeti onayla butonuna tıklandığında yeni bir sayfaya yönlendirme
+    window.location.href = '/Order/Confirmation'; // Bu URL'yi istediğiniz gibi güncelleyin
 }

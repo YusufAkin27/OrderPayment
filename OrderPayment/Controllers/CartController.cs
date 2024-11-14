@@ -17,202 +17,122 @@ namespace OrderPayment.Controllers
         }
 
 
-        [HttpPost]
-        public IActionResult AddToCart(int productId, int quantity = 1)
-        {
-            try
-            {
-                // Kullanıcı oturumunu kontrol et
-                var userJson = HttpContext.Session.GetString("LoggedInUser");
 
-                if (string.IsNullOrEmpty(userJson))
-                {
-                    return Json(new { success = false, message = "Lütfen giriş yapın." });
-                }
-
-                var user = JsonConvert.DeserializeObject<User>(userJson);
-                if (user == null)
-                {
-                    return Json(new { success = false, message = "Geçersiz oturum. Tekrar giriş yapın." });
-                }
-
-                // Kullanıcının sepetini al veya oluştur
-                var cart = _context.Carts
-                    .Include(c => c.CartItems)
-                    .FirstOrDefault(c => c.UserId == user.Id);
-
-                if (cart == null)
-                {
-                    cart = new Cart
-                    {
-                        UserId = user.Id,
-                        CreatedAt = DateTime.UtcNow,
-                        CartItems = new List<CartItem>()
-                    };
-                    _context.Carts.Add(cart);
-                    _context.SaveChanges();
-                }
-
-                // Ürün var mı kontrol et
-                var product = _context.products.FirstOrDefault(p => p.Id == productId);
-                if (product == null)
-                {
-                    return Json(new { success = false, message = "Ürün bulunamadı." });
-                }
-
-                // Sepette ürün var mı kontrol et
-                var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
-
-                if (cartItem != null)
-                {
-                    // Ürün sepette mevcutsa miktarı artır
-                    cartItem.Quantity += quantity;
-                }
-                else
-                {
-                    // Yeni ürün ekle
-                    cartItem = new CartItem
-                    {
-                        CartId = cart.Id,
-                        ProductId = productId,
-                        Quantity = quantity,
-                        Price = product.Price
-                    };
-                    cart.CartItems.Add(cartItem);
-                }
-
-                // Değişiklikleri kaydet
-                _context.SaveChanges();
-
-                return Json(new { success = true, message = "Ürün sepete eklendi!", cart });
-            }
-            catch (Exception ex)
-            {
-                // Genel hata işleme
-                return Json(new { success = false, message = "Bir hata oluştu: " + ex.Message });
-            }
-        }
 
 
         // Sepeti göster (GET isteği)
         [HttpGet]
         public IActionResult Cart()
         {
-            // Session'dan kullanıcı bilgilerini al
+            // Session validation
             var userJson = HttpContext.Session.GetString("LoggedInUser");
-
-            // Eğer session'da kullanıcı bilgisi yoksa kullanıcıyı login sayfasına yönlendir
             if (string.IsNullOrEmpty(userJson))
             {
                 return RedirectToAction("Login", "User");
             }
 
-            // JSON verisini User nesnesine dönüştür
             var user = JsonConvert.DeserializeObject<User>(userJson);
-
             if (user == null)
             {
                 return RedirectToAction("Login", "User");
             }
 
-            // Kullanıcının sepetini al (ve sepet içindeki ürün bilgilerini dahil et)
+            // Fetch user's cart with products
             var cart = _context.Carts
-                .Include(c => c.CartItems) // CartItem'ları dahil et
-                .ThenInclude(ci => ci.Product) // Product bilgilerini dahil et
+                .Include(c => c.CartItems)
+                .ThenInclude(ci => ci.Product)
                 .FirstOrDefault(c => c.UserId == user.Id);
 
             if (cart == null)
             {
-                // Eğer sepet yoksa, yeni bir sepet oluştur
                 cart = new Cart
                 {
                     UserId = user.Id,
-                    CreatedAt = DateTime.UtcNow,
+                    CreatedAt = DateTime.UtcNow
                 };
                 _context.Carts.Add(cart);
                 _context.SaveChanges();
             }
 
-          
-
-            // Güncellenmiş sepeti (ürünler eklenmiş haliyle) tekrar al
-            cart = _context.Carts
-                .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                .FirstOrDefault(c => c.UserId == user.Id);
-
-            // Sepet ve ürün bilgilerini View'a gönder
             return View(cart);
         }
 
-      
+
 
 
         // Sepetteki ürünü ekleme veya güncelleme işlemi (POST isteği)
         [HttpPost]
         public IActionResult UpdateCart(int productId, int quantity)
         {
-            // Session'dan kullanıcı bilgilerini al
             var userJson = HttpContext.Session.GetString("LoggedInUser");
-
             if (string.IsNullOrEmpty(userJson))
             {
-                return RedirectToAction("Login", "User"); // Login sayfasına yönlendir
+                return Json(new { success = false, message = "User session invalid. Please log in again." });
             }
 
             var user = JsonConvert.DeserializeObject<User>(userJson);
             if (user == null)
             {
-                return RedirectToAction("Login", "User");
+                return Json(new { success = false, message = "User not found." });
             }
 
-            // Kullanıcının sepetini al
             var cart = _context.Carts
-                .Where(c => c.UserId == user.Id)
                 .Include(c => c.CartItems)
-                .ThenInclude(ci => ci.Product)
-                .FirstOrDefault();
+                .FirstOrDefault(c => c.UserId == user.Id);
 
             if (cart == null)
             {
-                // Sepet bulunamazsa, yeni bir sepet oluştur
-                cart = new Cart { UserId = user.Id };
-                _context.Carts.Add(cart);
+                return Json(new { success = false, message = "Cart not found." });
             }
 
-            // Sepet item'ı (ürün) ekle veya güncelle
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
             if (cartItem != null)
             {
-                // Sepette mevcutsa, miktarı güncelle
                 cartItem.Quantity = quantity;
-
-                // Eğer miktar 0 ise, ürünü sepetten sil
                 if (cartItem.Quantity <= 0)
                 {
                     cart.CartItems.Remove(cartItem);
                 }
-            }
-            else if (quantity > 0)
-            {
-                // Sepette değilse, yeni bir CartItem oluştur
-                var product = _context.products.FirstOrDefault(p => p.Id == productId);
-                if (product != null)
-                {
-                    cartItem = new CartItem
-                    {
-                        ProductId = productId,
-                        Quantity = quantity,
-                        Price = product.Price // Ürün fiyatı
-                    };
-                    cart.CartItems.Add(cartItem);
-                }
+                _context.SaveChanges();
+                return Json(new { success = true });
             }
 
+            return Json(new { success = false, message = "Product not found in cart." });
+        }
+
+        // Confirm Cart
+        [HttpPost]
+        public IActionResult ConfirmCart()
+        {
+            var userJson = HttpContext.Session.GetString("LoggedInUser");
+            if (string.IsNullOrEmpty(userJson))
+            {
+                return Json(new { success = false, message = "User session invalid. Please log in again." });
+            }
+
+            var user = JsonConvert.DeserializeObject<User>(userJson);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            var cart = _context.Carts
+                .Include(c => c.CartItems)
+                .FirstOrDefault(c => c.UserId == user.Id);
+
+            if (cart == null || !cart.CartItems.Any())
+            {
+                return Json(new { success = false, message = "Your cart is empty." });
+            }
+
+            // Implement order processing logic here
+            // ...
+
+            // Clear the cart after confirmation
+            _context.CartItems.RemoveRange(cart.CartItems);
             _context.SaveChanges();
 
-            // Sepeti tekrar göster
-            return RedirectToAction("Cart");
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
     }
 }
