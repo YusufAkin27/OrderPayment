@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using OrderPayment.Models;
 using OrderPayment.Models.request;
 using OrderPayment.Models.Request;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrderPayment.Controllers
@@ -19,7 +21,7 @@ namespace OrderPayment.Controllers
         // Admin Paneli Sayfası
         public IActionResult AdminPanel()
         {
-            var products = _context.products.AsNoTracking().ToList(); // AsNoTracking ekledik
+            var products = _context.products.AsNoTracking().ToList();
             return View(products);
         }
 
@@ -38,20 +40,13 @@ namespace OrderPayment.Controllers
             {
                 try
                 {
-                    // Eğer resim URL'si girildiyse, URL'yi kaydediyoruz
-                    if (!string.IsNullOrEmpty(product.Image))
-                    {
-                        product.Image = product.Image;  // Resim URL'sini doğrudan modelden al
-                    }
-
                     _context.products.Add(product);
                     await _context.SaveChangesAsync();
                     return RedirectToAction("AdminPanel");
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "Ürün eklenirken bir hata oluştu.");
-                    ModelState.AddModelError(string.Empty, $"Hata Detayı: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, $"Ürün eklenirken bir hata oluştu: {ex.Message}");
                 }
             }
 
@@ -62,7 +57,7 @@ namespace OrderPayment.Controllers
         [HttpGet]
         public IActionResult EditProduct(int id)
         {
-            var product = _context.products.FirstOrDefault(p => p.Id == id);
+            var product = _context.products.AsNoTracking().FirstOrDefault(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -78,13 +73,12 @@ namespace OrderPayment.Controllers
             {
                 try
                 {
-                    var existingProduct = _context.products.FirstOrDefault(p => p.Id == product.Id);
+                    var existingProduct = await _context.products.FindAsync(product.Id);
                     if (existingProduct == null)
                     {
                         return NotFound();
                     }
 
-                    // Ürün bilgilerini güncelle
                     existingProduct.Name = product.Name;
                     existingProduct.Quantity = product.Quantity;
                     existingProduct.Price = product.Price;
@@ -96,8 +90,7 @@ namespace OrderPayment.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "Ürün güncellenirken bir hata oluştu.");
-                    ModelState.AddModelError(string.Empty, $"Hata Detayı: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, $"Ürün güncellenirken bir hata oluştu: {ex.Message}");
                 }
             }
 
@@ -111,7 +104,7 @@ namespace OrderPayment.Controllers
             var product = await _context.products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Ürün bulunamadı." });
             }
 
             _context.products.Remove(product);
@@ -125,8 +118,8 @@ namespace OrderPayment.Controllers
             var orders = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.products)
-                .AsNoTracking()  // Veritabanından alınan verilerin takibi yapılmaz
+                    .ThenInclude(oi => oi.products)
+                .AsNoTracking()
                 .ToListAsync();
 
             return View(orders);
@@ -138,7 +131,7 @@ namespace OrderPayment.Controllers
             var order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.products)
+                    .ThenInclude(oi => oi.products)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)
@@ -158,21 +151,22 @@ namespace OrderPayment.Controllers
             order.Status = newStatus;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("OrderDetails", new { id = orderId });  // OrderId parametre olarak verildi
+            return RedirectToAction("OrderDetails", new { id = orderId });
         }
 
-
+        // Kullanıcı listesi sayfası
         public IActionResult Users()
         {
-            var users = _context.Users.AsNoTracking().ToList(); // AsNoTracking ekledik
+            var users = _context.Users.AsNoTracking().ToList();
             return View(users);
         }
 
+        // Kullanıcı Silme
         [HttpDelete]
         public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
         {
             var user = await _context.Users
-                .Include(u => u.Orders) // Kullanıcıyla ilişkili siparişleri kontrol edebilmek için dahil ediyoruz
+                .Include(u => u.Orders)
                 .FirstOrDefaultAsync(u => u.Id == request.Id);
 
             if (user == null)
@@ -180,19 +174,12 @@ namespace OrderPayment.Controllers
                 return Json(new { success = false, message = "Kullanıcı bulunamadı." });
             }
 
-            // Ek kontrol: Kullanıcının herhangi bir siparişi var mı?
-            if (user.Orders.Any())
+            if (user.Orders.Any(o =>
+                o.Status == OrderStatus.Beklemede ||
+                o.Status == OrderStatus.Onaylandi ||
+                o.Status == OrderStatus.Kargolandı))
             {
-                // Kullanıcının aktif siparişlerinin durumunu kontrol et
-                bool hasUnfinishedOrders = user.Orders.Any(o =>
-                    o.Status == OrderStatus.Beklemede ||
-                    o.Status == OrderStatus.Onaylandi ||
-                    o.Status == OrderStatus.Kargolandı);
-
-                if (hasUnfinishedOrders)
-                {
-                    return Json(new { success = false, message = "Kullanıcının tamamlanmamış siparişleri olduğu için silinemez." });
-                }
+                return Json(new { success = false, message = "Kullanıcının tamamlanmamış siparişleri olduğu için silinemez." });
             }
 
             try
@@ -207,74 +194,58 @@ namespace OrderPayment.Controllers
             }
         }
 
-
-
-
-
-
-
-        // Kullanıcı düzenleme sayfasına yönlendiren eylemi unutmayın
+        // Kullanıcı Düzenleme Sayfası (GET)
         [HttpGet]
         public IActionResult EditUser(int id)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            var user = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            // Kullanıcıyı düzenleme sayfasına gönderiyoruz
-            return View(user);
+            var updateUserRequest = new UpdateUserRequest
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                IsActive = user.IsActive
+            };
+
+            return View(updateUserRequest);
         }
 
+        // Kullanıcı Güncelleme İşlemi (POST)
         [HttpPost]
         public async Task<IActionResult> EditUser(UpdateUserRequest updateRequest)
         {
-            // Eğer model geçerli değilse (boş alan varsa), hatayı döndürüyoruz
             if (!ModelState.IsValid)
             {
                 return View(updateRequest);
             }
 
-            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == updateRequest.Id);
+            var existingUser = await _context.Users.FindAsync(updateRequest.Id);
             if (existingUser == null)
             {
                 return NotFound();
             }
 
-            // Yalnızca dolu alanları güncelleme işlemi
-            if (!string.IsNullOrEmpty(updateRequest.FirstName))
-            {
-                existingUser.FirstName = updateRequest.FirstName;
-            }
-
-            if (!string.IsNullOrEmpty(updateRequest.LastName))
-            {
-                existingUser.LastName = updateRequest.LastName;
-            }
-
-            if (!string.IsNullOrEmpty(updateRequest.PhoneNumber))
-            {
-                existingUser.PhoneNumber = updateRequest.PhoneNumber;
-            }
-
-            // `IsActive` bool olduğu için null kontrolü yapılmaz, doğrudan güncellenebilir
+            existingUser.FirstName = updateRequest.FirstName ?? existingUser.FirstName;
+            existingUser.LastName = updateRequest.LastName ?? existingUser.LastName;
+            existingUser.PhoneNumber = updateRequest.PhoneNumber ?? existingUser.PhoneNumber;
             existingUser.IsActive = updateRequest.IsActive;
 
             try
             {
-                // Veritabanını güncelliyoruz
                 await _context.SaveChangesAsync();
-                // Başarıyla güncellendiyse kullanıcı listesine yönlendiriyoruz
                 return RedirectToAction("Users");
             }
             catch (Exception ex)
             {
-                // Hata durumunda mesaj gösteriyoruz
-                ModelState.AddModelError("", $"Hata: {ex.Message}");
+                ModelState.AddModelError(string.Empty, $"Hata: {ex.Message}");
                 return View(updateRequest);
             }
         }
-
     }
 }
