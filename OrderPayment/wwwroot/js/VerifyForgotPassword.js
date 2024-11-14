@@ -47,7 +47,7 @@ $("#verifyButton").click(function () {
 
         if (response.success) {
             setTimeout(function () {
-                window.location.href = '/User/ResetPasswordRequest';
+                window.location.href = '/User/ResetPassword';
             }, 1000);
         }
     });

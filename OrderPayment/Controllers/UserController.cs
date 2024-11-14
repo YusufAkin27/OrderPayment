@@ -192,7 +192,7 @@ public class UserController : Controller
             _context.Users.Update(user); // Update ile güncelle
 
             // Doğrulama kodunu geçersiz hale getir
-            verification.ExpiryInSeconds = 0;
+            verification.ExpiryInSeconds = 1;
             _context.VerificationCodes.Update(verification);
 
             try
@@ -469,7 +469,7 @@ public class UserController : Controller
         HttpContext.Session.SetString("LoggedInUser", JsonConvert.SerializeObject(user));
 
         // Doğrulama kodunu geçersiz hale getir
-        verification.ExpiryInSeconds = 0; // Expire süresini sıfır yap
+        verification.ExpiryInSeconds = 1; // Expire süresini sıfır yap
         _context.VerificationCodes.Update(verification);
         _context.SaveChanges();
 
@@ -524,18 +524,19 @@ public class UserController : Controller
             UserId = user.Id,
             Code = verificationCode,
             SentAt = DateTime.UtcNow,
-            ExpiryInSeconds = 180 // Kodun geçerlilik süresi 3 dakika
+            ExpiryInSeconds = 120 // Kodun geçerlilik süresi 2 dakika
         };
         _context.VerificationCodes.Add(newVerification);
+        _context.SaveChanges();
+
+
+        HttpContext.Session.SetString("PasswordResetRequested", "false");
 
         // Kullanıcı bilgilerini HTTP oturumuna kaydet
-        HttpContext.Session.SetString("ForgotPasswordUser", JsonConvert.SerializeObject(user, new JsonSerializerSettings
+        HttpContext.Session.SetString("User", JsonConvert.SerializeObject(user, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         }));
-
-        // Veritabanı işlemlerini kaydet
-        _context.SaveChanges();
 
         return Json(new { success = true, message = "Doğrulama kodu başarıyla gönderildi." });
     }
@@ -544,8 +545,8 @@ public class UserController : Controller
     [HttpPost]
     public IActionResult VerifyForgotPasswordCode(string verificationCode)
     {
-        // Session'dan kullanıcı bilgisini al
-        var userJson = HttpContext.Session.GetString("ForgotPasswordUser");
+        // Session'dan kullanıcı bilgilerini al
+        var userJson = HttpContext.Session.GetString("User");
 
         // Eğer session'da kullanıcı bilgisi yoksa hata döndür
         if (string.IsNullOrEmpty(userJson))
@@ -572,31 +573,47 @@ public class UserController : Controller
             return Json(new { success = false, message = "Geçersiz veya süresi dolmuş doğrulama kodu." });
         }
 
-        // Kod geçerli ise kullanıcıyı doğrulama başarılı olarak kabul et
+        // Kod geçerli ise, doğrulama başarılı olarak kabul edilir
         // Doğrulama kodunu geçersiz hale getir
-        verification.ExpiryInSeconds = 0; // Kodu geçersiz yap
+        verification.ExpiryInSeconds = 2; // Kodu geçersiz yap
         _context.VerificationCodes.Update(verification);
         _context.SaveChanges();
 
         // Kullanıcı bilgilerini ResetPassword işlemi için session'da sakla
-        HttpContext.Session.SetString("ResetPasswordUser", JsonConvert.SerializeObject(user));
+        HttpContext.Session.SetString("User", JsonConvert.SerializeObject(user, new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        }));
+        HttpContext.Session.SetString("PasswordResetRequested", "true");
+
 
         // Doğrulama başarılı, ResetPassword sayfasına yönlendir
         return Json(new { success = true, message = "Doğrulama başarılı! Şifre sıfırlama sayfasına yönlendiriliyorsunuz.", redirectUrl = Url.Action("ResetPassword", "User") });
     }
 
 
+
+
     [HttpPost]
     public IActionResult ResetPassword([FromBody] ResetPasswordRequest resetPasswordRequest)
     {
-        // Model doğrulaması
+        // 1. Session'dan kullanıcının doğrulama talebi durumu kontrolü
+        var resetRequested = HttpContext.Session.GetString("PasswordResetRequested");
+
+        // Eğer doğrulama yapılmamışsa, kullanıcıyı doğrulama sayfasına yönlendir
+        if (string.IsNullOrEmpty(resetRequested) || resetRequested != "true")
+        {
+            return RedirectToAction("VerifyForgotPasswordCode", "User");  // Doğrulama sayfasına yönlendir
+        }
+
+        // 2. Model doğrulaması: Şifre geçerli mi kontrolü
         if (!ModelState.IsValid || string.IsNullOrWhiteSpace(resetPasswordRequest.Password))
         {
             return Json(new { success = false, message = "Geçerli bir şifre giriniz." });
         }
 
-        // Kullanıcı bilgilerini session'dan al
-        var userJson = HttpContext.Session.GetString("ResetPasswordUser");
+        // 3. Session'dan kullanıcı bilgilerini al
+        var userJson = HttpContext.Session.GetString("User");
 
         // Eğer session'da kullanıcı bilgisi yoksa hata döndür
         if (string.IsNullOrEmpty(userJson))
@@ -604,29 +621,32 @@ public class UserController : Controller
             return Json(new { success = false, message = "Şifre sıfırlama oturumunuz geçersiz. Lütfen işlemi yeniden başlatın." });
         }
 
-        // JSON verisini User nesnesine dönüştür
+        // 4. JSON verisini User nesnesine dönüştür
         var user = JsonConvert.DeserializeObject<User>(userJson);
         if (user == null)
         {
-            return Json(new { success = false, message = "Kullanıcı bulunamadı." });
+            return Json(new { success = false, message = "Kullanıcı bilgisi bulunamadı." });
         }
 
-        // Kullanıcının veritabanındaki kaydını al
+        // 5. Kullanıcının veritabanındaki kaydını al
         var dbUser = _context.Users.FirstOrDefault(u => u.Id == user.Id);
         if (dbUser == null)
         {
             return Json(new { success = false, message = "Kullanıcı bilgisi doğrulanamadı." });
         }
 
-        // Yeni şifreyi hash'leyerek kaydet
+        // 6. Yeni şifreyi hash'leyerek kaydet
         dbUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(resetPasswordRequest.Password);
+
+        // 7. Veritabanını güncelle
         _context.Users.Update(dbUser);
         _context.SaveChanges();
 
-        // Session'daki kullanıcı bilgisini temizle
-        HttpContext.Session.Remove("ResetPasswordUser");
+        // 8. Session'daki kullanıcı bilgisini temizle
+        HttpContext.Session.Remove("User");
+        HttpContext.Session.Remove("PasswordResetRequested");
 
-        // Şifre sıfırlama işlemi başarılı
+        // 9. Şifre sıfırlama işlemi başarılı
         return Json(new { success = true, message = "Şifreniz başarıyla sıfırlandı! Artık yeni şifrenizle giriş yapabilirsiniz.", redirectUrl = Url.Action("Login", "User") });
     }
 

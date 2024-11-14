@@ -22,7 +22,7 @@
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ phoneNumber: "+90"+phoneNumber }),
+                body: JSON.stringify({ phoneNumber: "+90" + phoneNumber }), // Telefon numarasına "+90" ekle
             });
 
             const result = await response.json();
@@ -37,7 +37,8 @@
             }
         } catch (error) {
             // Ağ hatası veya beklenmedik bir hata
-            errorMessage.textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
+            console.error("Hata:", error); // Hata loglama
+            errorMessage.textContent = "Bir ağ hatası oluştu. Lütfen tekrar deneyin.";
             errorMessage.style.color = "red";
         }
     });

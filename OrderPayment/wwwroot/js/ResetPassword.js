@@ -31,7 +31,7 @@
 
             if (response.ok && result.success) {
                 // Başarılı ise yönlendirme yap
-                window.location.href = result.redirectUrl || "/Login";
+                window.location.href = result.redirectUrl || "User/Login";
             } else {
                 // Hata durumunda mesajı göster
                 errorMessage.textContent = result.message || "Şifre sıfırlama işlemi başarısız.";
