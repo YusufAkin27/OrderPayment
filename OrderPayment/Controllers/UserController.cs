@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderPayment.Models;
-using OrderPayment.Models.request;
-using YourProjectNamespace.Models;
 using ForgotPasswordRequest = OrderPayment.Models.request.ForgotPasswordRequest;
 using ResetPasswordRequest = OrderPayment.Models.request.ResetPasswordRequest;
 using RegisterRequest = OrderPayment.Models.request.RegisterRequest;

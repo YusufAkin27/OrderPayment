@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderPayment.Models;
+using OrderPayment.Models.request;
+using OrderPayment.Models.Request;
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrderPayment.Controllers
@@ -17,7 +21,7 @@ namespace OrderPayment.Controllers
         // Admin Paneli Sayfası
         public IActionResult AdminPanel()
         {
-            var products = _context.products.AsNoTracking().ToList(); // AsNoTracking ekledik
+            var products = _context.products.AsNoTracking().ToList();
             return View(products);
         }
 
@@ -36,20 +40,13 @@ namespace OrderPayment.Controllers
             {
                 try
                 {
-                    // Eğer resim URL'si girildiyse, URL'yi kaydediyoruz
-                    if (!string.IsNullOrEmpty(product.Image))
-                    {
-                        product.Image = product.Image;  // Resim URL'sini doğrudan modelden al
-                    }
-
                     _context.products.Add(product);
                     await _context.SaveChangesAsync();
                     return RedirectToAction("AdminPanel");
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "Ürün eklenirken bir hata oluştu.");
-                    ModelState.AddModelError(string.Empty, $"Hata Detayı: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, $"Ürün eklenirken bir hata oluştu: {ex.Message}");
                 }
             }
 
@@ -60,7 +57,7 @@ namespace OrderPayment.Controllers
         [HttpGet]
         public IActionResult EditProduct(int id)
         {
-            var product = _context.products.FirstOrDefault(p => p.Id == id);
+            var product = _context.products.AsNoTracking().FirstOrDefault(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -76,13 +73,12 @@ namespace OrderPayment.Controllers
             {
                 try
                 {
-                    var existingProduct = _context.products.FirstOrDefault(p => p.Id == product.Id);
+                    var existingProduct = await _context.products.FindAsync(product.Id);
                     if (existingProduct == null)
                     {
                         return NotFound();
                     }
 
-                    // Ürün bilgilerini güncelle
                     existingProduct.Name = product.Name;
                     existingProduct.Quantity = product.Quantity;
                     existingProduct.Price = product.Price;
@@ -94,8 +90,7 @@ namespace OrderPayment.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, "Ürün güncellenirken bir hata oluştu.");
-                    ModelState.AddModelError(string.Empty, $"Hata Detayı: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, $"Ürün güncellenirken bir hata oluştu: {ex.Message}");
                 }
             }
 
@@ -109,7 +104,7 @@ namespace OrderPayment.Controllers
             var product = await _context.products.FindAsync(id);
             if (product == null)
             {
-                return NotFound();
+                return Json(new { success = false, message = "Ürün bulunamadı." });
             }
 
             _context.products.Remove(product);
@@ -123,8 +118,8 @@ namespace OrderPayment.Controllers
             var orders = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.products)
-                .AsNoTracking()  // Veritabanından alınan verilerin takibi yapılmaz
+                    .ThenInclude(oi => oi.products)
+                .AsNoTracking()
                 .ToListAsync();
 
             return View(orders);
@@ -136,7 +131,7 @@ namespace OrderPayment.Controllers
             var order = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.products)
+                    .ThenInclude(oi => oi.products)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null)
@@ -156,7 +151,101 @@ namespace OrderPayment.Controllers
             order.Status = newStatus;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("OrderDetails", new { id = orderId });  // OrderId parametre olarak verildi
+            return RedirectToAction("OrderDetails", new { id = orderId });
+        }
+
+        // Kullanıcı listesi sayfası
+        public IActionResult Users()
+        {
+            var users = _context.Users.AsNoTracking().ToList();
+            return View(users);
+        }
+
+        // Kullanıcı Silme
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
+        {
+            var user = await _context.Users
+                .Include(u => u.Orders)
+                .FirstOrDefaultAsync(u => u.Id == request.Id);
+
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
+            }
+
+            if (user.Orders.Any(o =>
+                o.Status == OrderStatus.Beklemede ||
+                o.Status == OrderStatus.Onaylandi ||
+                o.Status == OrderStatus.Kargolandı))
+            {
+                return Json(new { success = false, message = "Kullanıcının tamamlanmamış siparişleri olduğu için silinemez." });
+            }
+
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Hata: {ex.Message}" });
+            }
+        }
+
+        // Kullanıcı Düzenleme Sayfası (GET)
+        [HttpGet]
+        public IActionResult EditUser(int id)
+        {
+            var user = _context.Users.AsNoTracking().FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var updateUserRequest = new UpdateUserRequest
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                IsActive = user.IsActive
+            };
+
+            return View(updateUserRequest);
+        }
+
+        // Kullanıcı Güncelleme İşlemi (POST)
+        [HttpPost]
+        public async Task<IActionResult> EditUser(UpdateUserRequest updateRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(updateRequest);
+            }
+
+            var existingUser = await _context.Users.FindAsync(updateRequest.Id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
+
+            existingUser.FirstName = updateRequest.FirstName ?? existingUser.FirstName;
+            existingUser.LastName = updateRequest.LastName ?? existingUser.LastName;
+            existingUser.PhoneNumber = updateRequest.PhoneNumber ?? existingUser.PhoneNumber;
+            existingUser.IsActive = updateRequest.IsActive;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Users");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Hata: {ex.Message}");
+                return View(updateRequest);
+            }
         }
     }
 }
