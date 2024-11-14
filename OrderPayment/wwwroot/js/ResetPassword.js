@@ -3,57 +3,52 @@
     const errorMessage = document.getElementById("error-message");
 
     form.addEventListener("submit", async (event) => {
-        event.preventDefault(); // Formun varsayılan gönderim işlemini durdur
+        event.preventDefault();
 
-        // Şifreleri al
-        const passwordInputs = document.querySelectorAll("input[type='password']");
-        const password = passwordInputs[0].value;
-        const confirmPassword = passwordInputs[1].value;
+        // Fetch the new password values
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
-        // Şifre doğrulama
-        if (password !== confirmPassword) {
+        // Password matching validation
+        if (newPassword !== confirmPassword) {
             errorMessage.textContent = "Şifreler eşleşmiyor!";
             errorMessage.style.color = "red";
             return;
         }
 
-        // API'ye istek gönder
+        // Send request to the API
         try {
             const response = await fetch(form.action, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ password: password }),
+                body: JSON.stringify({ password: newPassword }),
             });
 
             const result = await response.json();
 
             if (response.ok && result.success) {
-                // Başarılı ise yönlendirme yap
+                // Redirect on success
                 window.location.href = result.redirectUrl || "User/Login";
             } else {
-                // Hata durumunda mesajı göster
+                // Display error message
                 errorMessage.textContent = result.message || "Şifre sıfırlama işlemi başarısız.";
                 errorMessage.style.color = "red";
             }
         } catch (error) {
-            // Ağ hatası veya beklenmedik bir hata
+            // Network or unexpected error
             errorMessage.textContent = "Bir hata oluştu. Lütfen tekrar deneyin.";
             errorMessage.style.color = "red";
         }
     });
 });
 
-// Şifre göster/gizle fonksiyonu
+// Password toggle function
 function togglePassword() {
-    const passwordInputs = document.querySelectorAll("input[type='password']");
+    const passwordInputs = [document.getElementById("newPassword"), document.getElementById("confirmPassword")];
     passwordInputs.forEach((input) => {
-        if (input.type === "password") {
-            input.type = "text";
-        } else {
-            input.type = "password";
-        }
+        input.type = input.type === "password" ? "text" : "password";
     });
 
     const toggleIcons = document.querySelectorAll(".toggle-btn i");
