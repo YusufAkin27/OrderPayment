@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderPayment.Models;
+using OrderPayment.Models.request;
 using System.Threading.Tasks;
 
 namespace OrderPayment.Controllers
@@ -158,5 +159,93 @@ namespace OrderPayment.Controllers
 
             return RedirectToAction("OrderDetails", new { id = orderId });  // OrderId parametre olarak verildi
         }
+
+
+        public IActionResult Users()
+        {
+            var users = _context.Users.AsNoTracking().ToList(); // AsNoTracking ekledik
+            return View(users);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteUser([FromBody] DeleteUserRequest request)
+        {
+            var user = await _context.Users
+                .Include(u => u.Orders) // Kullanıcıyla ilişkili siparişleri kontrol edebilmek için dahil ediyoruz
+                .FirstOrDefaultAsync(u => u.Id == request.Id);
+
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Kullanıcı bulunamadı." });
+            }
+
+            // Ek kontrol: Kullanıcının herhangi bir siparişi var mı?
+            if (user.Orders.Any())
+            {
+                // Kullanıcının aktif siparişlerinin durumunu kontrol et
+                bool hasUnfinishedOrders = user.Orders.Any(o =>
+                    o.Status == OrderStatus.Beklemede ||
+                    o.Status == OrderStatus.Onaylandi ||
+                    o.Status == OrderStatus.Kargolandı);
+
+                if (hasUnfinishedOrders)
+                {
+                    return Json(new { success = false, message = "Kullanıcının tamamlanmamış siparişleri olduğu için silinemez." });
+                }
+            }
+
+            try
+            {
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Hata: {ex.Message}" });
+            }
+        }
+
+
+
+
+
+
+
+        // Kullanıcı düzenleme sayfasına yönlendiren eylemi unutmayın
+        [HttpGet]
+        public IActionResult EditUser(int id)
+        {
+            var user = _context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EditUser(User updatedUser)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = _context.Users.FirstOrDefault(u => u.Id == updatedUser.Id);
+                if (existingUser == null)
+                {
+                    return NotFound();
+                }
+
+                // Kullanıcı bilgilerini güncelle
+                existingUser.FirstName = updatedUser.FirstName;
+                existingUser.LastName = updatedUser.LastName;
+                existingUser.PhoneNumber = updatedUser.PhoneNumber;
+                existingUser.IsActive = updatedUser.IsActive;
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Users");
+            }
+            return View(updatedUser);
+        }
+
     }
 }

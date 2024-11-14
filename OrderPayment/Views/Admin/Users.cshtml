@@ -1,1 +1,64 @@
-﻿
+﻿@model IEnumerable<OrderPayment.Models.User>
+
+<h2>Kullanıcılar Listesi</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Ad</th>
+            <th>Soyad</th>
+            <th>Telefon Numarası</th>
+            <th>Oluşturulma Tarihi</th>
+            <th>Aktif Mi?</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr id="User-@user.Id">
+                <td>@user.Id</td>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+                <td>@user.PhoneNumber</td>
+                <td>@user.CreatedAt.ToShortDateString()</td>
+                <td>@user.IsActive ? "Evet" : "Hayır"</td>
+                <td>
+                    <a asp-controller="Admin" asp-action="EditUser" asp-route-id="@user.Id" class="btn btn-warning">Düzenle</a>
+                    <button class="btn btn-danger" onclick="deleteUser(@user.Id)">Sil</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function deleteUser(id) {
+        if (confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) {
+            fetch('/Admin/DeleteUser', {
+                method: 'DELETE', // DELETE HTTP metodunu kullanıyoruz
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id }) // JSON olarak id'yi gönderiyoruz
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Kullanıcı silinirken bir hata oluştu.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('User-' + id).style.display = 'none'; // Silinen kullanıcıyı gizler
+                    } else {
+                        alert(data.message || "Kullanıcı silinirken bir hata oluştu.");
+                    }
+                })
+                .catch(error => {
+                    alert(error.message || "Kullanıcı silinirken bir hata oluştu.");
+                    console.error('Hata:', error);
+                });
+        }
+    }
+</script>
