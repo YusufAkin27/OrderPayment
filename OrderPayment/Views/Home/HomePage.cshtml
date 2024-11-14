@@ -2,26 +2,39 @@
 
 @await Html.PartialAsync("UserNavbar")
 
-<div class="container mt-4">
-    <h2>Ürün Listesi</h2>
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Listesi</title>
+    <link rel="stylesheet" href="~/css/HomePage.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="page-title">Ürün Listesi</h2>
 
-    <div class="row">
-        @foreach (var product in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <img src="@product.Image" class="card-img-top" alt="Ürün Resmi" />
-                    <div class="card-body">
-                        <h5 class="card-title">@product.Name</h5>
-                        <p class="card-text">
-                            @product.Price.ToString("C")<br />
-                            Kategori: @product.Category<br />
-                            Miktar: @product.Quantity @product.Unit
-                        </p>
-                        <a href="#" class="btn btn-primary">Sepete Ekle</a>
+        <div id="product-grid" class="row">
+            @foreach (var product in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card product-card">
+                        <div class="card-image">
+                            <img src="@product.Image" alt="@product.Name" class="product-image" />
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">@product.Name</h5>
+                            <p class="card-price">@product.Price.ToString("C")</p>
+                            <p class="card-category">Kategori: @product.Category</p>
+                            <p class="card-quantity">Miktar: @product.Quantity @product.Unit</p>
+                            <button class="btn btn-primary add-to-cart-btn" onclick="addToCart('@product.Id')">Sepete Ekle</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     </div>
-</div>
+
+    <script src="~/js/HomePage.js"></script>
+</body>
+</html>
