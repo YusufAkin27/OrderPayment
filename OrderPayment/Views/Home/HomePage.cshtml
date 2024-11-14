@@ -27,13 +27,21 @@
                             <p class="card-price">@product.Price.ToString("C")</p>
                             <p class="card-category">Kategori: @product.Category</p>
                             <p class="card-quantity">Miktar: @product.Quantity @product.Unit</p>
-                            <button class="btn btn-primary add-to-cart-btn" onclick="addToCart('@product.Id')">Sepete Ekle</button>
+                            <!-- Use data-product-id attribute to pass the product ID -->
+                            <button class="btn btn-primary add-to-cart-btn" data-product-id="@product.Id">Sepete Ekle</button>
                         </div>
                     </div>
                 </div>
             }
         </div>
+
+        <!-- Display cart total (example) -->
+        <<div id="cart-total-container">
+            <p><strong>Sepet Toplamı: </strong><span id="cart-total">0</span> TL</p>
+        </div>
+
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="~/js/HomePage.js"></script>
 </body>

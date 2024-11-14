@@ -47,7 +47,7 @@ $("#verifyButton").click(function () {
 
         if (response.success) {
             setTimeout(function () {
-                window.location.href = '/User/UserHome';
+                window.location.href = '/Home/HomePage';
             }, 1000);
         }
     });
