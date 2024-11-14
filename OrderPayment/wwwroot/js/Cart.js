@@ -1,9 +1,4 @@
-﻿let cart = {
-    items: [
-        { id: 'item1', price: 100, quantity: 1 }
-    ]
-};
-
+﻿
 function changeQuantity(itemId, change) {
     const item = cart.items.find(i => i.id === itemId);
     if (item) {

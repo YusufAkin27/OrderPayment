@@ -25,26 +25,38 @@ namespace OrderPayment.Controllers
         [HttpPost]
         public IActionResult AddToCart(int productId)
         {
-            // Retrieve the cart for the logged-in user
+            // Kullanıcının oturum bilgisini al
             var userJson = HttpContext.Session.GetString("LoggedInUser");
 
             if (string.IsNullOrEmpty(userJson))
             {
-                // User is not logged in, redirect to login page
+                // Kullanıcı oturum açmamışsa, giriş sayfasına yönlendir
                 return Json(new { success = false, message = "Lütfen giriş yapın.", redirectTo = "/User/Login" });
             }
 
+            // Kullanıcıyı oturumdan çözümle
             var user = JsonConvert.DeserializeObject<User>(userJson);
 
-            // Retrieve the cart for the user
+            // Kullanıcının sepetini veritabanından al
             var cart = _context.Carts.Include(c => c.CartItems).FirstOrDefault(c => c.UserId == user.Id);
 
+            // Sepet yoksa, yeni bir sepet oluştur
             if (cart == null)
             {
-                return Json(new { success = false, message = "Sepet bulunamadı." });
+                cart = new Cart
+                {
+                    UserId = user.Id,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Carts.Add(cart); // Yeni sepeti veritabanına ekle
+                _context.SaveChanges();    // Veritabanına kaydet
             }
 
-            // Find the product by ID
+            // Sepeti kullanıcıya ata (isteğe bağlı, başka bir yerde kullanılıyorsa)
+            user.Cart = cart;
+
+            // Ürünü veritabanından bul
             var product = _context.products.FirstOrDefault(p => p.Id == productId);
 
             if (product == null)
@@ -52,35 +64,32 @@ namespace OrderPayment.Controllers
                 return Json(new { success = false, message = "Ürün bulunamadı." });
             }
 
-            // Check if the product is already in the cart
+            // Ürün sepette mevcut mu kontrol et
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
 
             if (cartItem != null)
             {
-                // If the product is already in the cart, increase the quantity
+                // Eğer ürün zaten sepette varsa, miktarı artır
                 cartItem.Quantity += 1;
             }
             else
             {
-                // If the product is not in the cart, add it
+                // Ürün sepette yoksa, yeni bir öğe olarak ekle
                 cart.CartItems.Add(new CartItem
                 {
                     ProductId = productId,
                     Quantity = 1,
-                    Price = (decimal)product.Price,  // Ensure the price is a decimal
+                    Price = (decimal)product.Price,  // Fiyatın decimal türünde olduğundan emin ol
                     AddedAt = DateTime.UtcNow
                 });
             }
 
-            // Recalculate the total amount of the cart using the UpdateTotalAmount method
+            // Toplam tutarı güncelle
             cart.UpdateTotalAmount();
             _context.SaveChanges();
 
-            // Return success response with the updated cart total
+            // Başarıyla sepete ekleme işlemi bitti, güncellenmiş sepet toplamıyla yanıt döndür
             return Json(new { success = true, message = "Ürün sepete eklendi.", cartTotal = cart.TotalAmount.ToString("C") });
         }
-
-
-
     }
 }

@@ -9,11 +9,10 @@
     <link rel="stylesheet" href="~/css/Cart.css">
 </head>
 <body>
-
     <div class="cart-container">
         <h1>Sepetiniz</h1>
 
-        <!-- Ürün Listesi -->
+        <!-- Sepetteki Ürünler -->
         <div class="cart-items">
             @if (Model.CartItems != null && Model.CartItems.Count > 0)
             {
@@ -46,7 +45,7 @@
         <!-- Sepet Toplamı -->
         <div class="cart-summary">
             <h3>Toplam Tutar</h3>
-            <p><strong>Toplam: <span id="totalAmount">0 TL</span></strong></p>
+            <p><strong>Toplam: <span id="totalAmount">@Model.TotalAmount.ToString("C")</span></strong></p>
 
             <!-- Siparişi Tamamla Butonu -->
             <button class="btn-complete-order" onclick="window.location.href='@Url.Action("Confirm", "Order")'">Siparişi Tamamla</button>
