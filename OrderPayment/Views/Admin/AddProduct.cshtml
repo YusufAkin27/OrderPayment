@@ -51,7 +51,26 @@
                 </select>
 
                 <label for="imageUrl">Resim URL:</label>
-                <input type="text" id="imageUrl" name="imageUrl" placeholder="Resim URL'sini buraya girin" />
+                <input type="text" id="imageUrl" name="Image" placeholder="Resim URL'sini buraya girin" oninput="previewImage()" />
+
+                <!-- Resim önizleme alanı -->
+                <img id="preview" alt="Ürün Resmi" style="width:150px;height:auto; display:none; margin-top:10px;">
+
+                <script>
+                    function previewImage() {
+                        const url = document.getElementById('imageUrl').value;
+                        const imgPreview = document.getElementById('preview');
+
+                        // URL geçerli mi diye kontrol et
+                        if (url) {
+                            imgPreview.src = url;
+                            imgPreview.style.display = 'block';
+                        } else {
+                            imgPreview.style.display = 'none';
+                        }
+                    }
+                </script>
+
 
                 <button type="submit">Ürün Ekle</button>
             </form>

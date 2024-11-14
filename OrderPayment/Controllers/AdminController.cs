@@ -40,7 +40,7 @@ namespace OrderPayment.Controllers
             {
                 try
                 {
-                    _context.products.Add(product);
+                    _context.products.Add(product); // product içinde imageUrl bağlantısı var
                     await _context.SaveChangesAsync();
                     return RedirectToAction("AdminPanel");
                 }
@@ -49,9 +49,9 @@ namespace OrderPayment.Controllers
                     ModelState.AddModelError(string.Empty, $"Ürün eklenirken bir hata oluştu: {ex.Message}");
                 }
             }
-
             return View(product);
         }
+
 
         // Ürün Güncelle Sayfası (GET)
         [HttpGet]
