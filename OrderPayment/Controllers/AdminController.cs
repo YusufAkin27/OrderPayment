@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using OrderPayment.Models;
 using OrderPayment.Models.request;
+using OrderPayment.Models.Request;
 using System.Threading.Tasks;
 
 namespace OrderPayment.Controllers
@@ -221,30 +222,58 @@ namespace OrderPayment.Controllers
             {
                 return NotFound();
             }
+
+            // Kullanıcıyı düzenleme sayfasına gönderiyoruz
             return View(user);
         }
 
         [HttpPost]
-        public async Task<IActionResult> EditUser(User updatedUser)
+        public async Task<IActionResult> EditUser(UpdateUserRequest updateRequest)
         {
-            if (ModelState.IsValid)
+            // Eğer model geçerli değilse (boş alan varsa), hatayı döndürüyoruz
+            if (!ModelState.IsValid)
             {
-                var existingUser = _context.Users.FirstOrDefault(u => u.Id == updatedUser.Id);
-                if (existingUser == null)
-                {
-                    return NotFound();
-                }
+                return View(updateRequest);
+            }
 
-                // Kullanıcı bilgilerini güncelle
-                existingUser.FirstName = updatedUser.FirstName;
-                existingUser.LastName = updatedUser.LastName;
-                existingUser.PhoneNumber = updatedUser.PhoneNumber;
-                existingUser.IsActive = updatedUser.IsActive;
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Id == updateRequest.Id);
+            if (existingUser == null)
+            {
+                return NotFound();
+            }
 
+            // Yalnızca dolu alanları güncelleme işlemi
+            if (!string.IsNullOrEmpty(updateRequest.FirstName))
+            {
+                existingUser.FirstName = updateRequest.FirstName;
+            }
+
+            if (!string.IsNullOrEmpty(updateRequest.LastName))
+            {
+                existingUser.LastName = updateRequest.LastName;
+            }
+
+            if (!string.IsNullOrEmpty(updateRequest.PhoneNumber))
+            {
+                existingUser.PhoneNumber = updateRequest.PhoneNumber;
+            }
+
+            // `IsActive` bool olduğu için null kontrolü yapılmaz, doğrudan güncellenebilir
+            existingUser.IsActive = updateRequest.IsActive;
+
+            try
+            {
+                // Veritabanını güncelliyoruz
                 await _context.SaveChangesAsync();
+                // Başarıyla güncellendiyse kullanıcı listesine yönlendiriyoruz
                 return RedirectToAction("Users");
             }
-            return View(updatedUser);
+            catch (Exception ex)
+            {
+                // Hata durumunda mesaj gösteriyoruz
+                ModelState.AddModelError("", $"Hata: {ex.Message}");
+                return View(updateRequest);
+            }
         }
 
     }
