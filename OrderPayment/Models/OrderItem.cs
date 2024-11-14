@@ -16,6 +16,8 @@ namespace OrderPayment.Models
         [ForeignKey("OrderId")]
         public Order Order { get; set; }
 
+        public Product products { get; set; }
+
         [Required]
         public int ProductId { get; set; }
 

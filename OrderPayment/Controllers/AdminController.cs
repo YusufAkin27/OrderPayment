@@ -1,7 +1,6 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderPayment.Models;
-using System.IO;
 using System.Threading.Tasks;
 
 namespace OrderPayment.Controllers
@@ -18,7 +17,7 @@ namespace OrderPayment.Controllers
         // Admin Paneli Sayfası
         public IActionResult AdminPanel()
         {
-            var products = _context.products.ToList();
+            var products = _context.products.AsNoTracking().ToList(); // AsNoTracking ekledik
             return View(products);
         }
 
@@ -29,17 +28,18 @@ namespace OrderPayment.Controllers
             return View();
         }
 
+        // Ürün Ekleme İşlemi (POST)
         [HttpPost]
-        public async Task<IActionResult> AddProduct(Product product, string imageUrl)
+        public async Task<IActionResult> AddProduct(Product product)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
                     // Eğer resim URL'si girildiyse, URL'yi kaydediyoruz
-                    if (!string.IsNullOrEmpty(imageUrl))
+                    if (!string.IsNullOrEmpty(product.Image))
                     {
-                        product.Image = imageUrl;
+                        product.Image = product.Image;  // Resim URL'sini doğrudan modelden al
                     }
 
                     _context.products.Add(product);
@@ -102,6 +102,7 @@ namespace OrderPayment.Controllers
             return View(product);
         }
 
+        // Ürün Silme
         [HttpPost]
         public async Task<IActionResult> DeleteProduct(int id)
         {
@@ -116,8 +117,46 @@ namespace OrderPayment.Controllers
             return Json(new { success = true });
         }
 
+        // Siparişlerin listelendiği sayfa
+        public async Task<IActionResult> OrderList()
+        {
+            var orders = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.products)
+                .AsNoTracking()  // Veritabanından alınan verilerin takibi yapılmaz
+                .ToListAsync();
 
+            return View(orders);
+        }
 
+        // Sipariş detayları sayfası
+        public async Task<IActionResult> OrderDetails(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.products)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
 
+            if (order == null)
+                return NotFound();
+
+            return View(order);
+        }
+
+        // Sipariş durumu güncelleme
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatus(int orderId, OrderStatus newStatus)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                return NotFound();
+
+            order.Status = newStatus;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("OrderDetails", new { id = orderId });  // OrderId parametre olarak verildi
+        }
     }
 }
