@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrderPayment.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace OrderPayment.Controllers
 {
@@ -21,66 +22,65 @@ namespace OrderPayment.Controllers
         }
 
 
-        // Ana Sayfa: Tüm Ürünleri Listele
-        public async Task<IActionResult> HomePage(int page = 1, int pageSize = 10)
+        [HttpPost]
+        public IActionResult AddToCart(int productId)
         {
-            var totalProducts = await _context.products.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+            // Retrieve the cart for the logged-in user
+            var userJson = HttpContext.Session.GetString("LoggedInUser");
 
-            var products = await _context.products
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            ViewData["TotalPages"] = totalPages;
-            ViewData["CurrentPage"] = page;
-
-            return View(products);
-        }
-
-        // Ürün Adına Göre Arama
-        public async Task<IActionResult> Search(string searchQuery, int page = 1, int pageSize = 10)
-        {
-            var query = _context.products.AsQueryable();
-
-            if (!string.IsNullOrEmpty(searchQuery))
+            if (string.IsNullOrEmpty(userJson))
             {
-                query = query.Where(p => p.Name.Contains(searchQuery));
+                // User is not logged in, redirect to login page
+                return Json(new { success = false, message = "Lütfen giriş yapın.", redirectTo = "/User/Login" });
             }
 
-            var totalProducts = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
+            var user = JsonConvert.DeserializeObject<User>(userJson);
 
-            var products = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            // Retrieve the cart for the user
+            var cart = _context.Carts.Include(c => c.CartItems).FirstOrDefault(c => c.UserId == user.Id);
 
-            ViewData["TotalPages"] = totalPages;
-            ViewData["CurrentPage"] = page;
-            ViewData["SearchQuery"] = searchQuery;
+            if (cart == null)
+            {
+                return Json(new { success = false, message = "Sepet bulunamadı." });
+            }
 
-            return View("HomePage", products);
+            // Find the product by ID
+            var product = _context.products.FirstOrDefault(p => p.Id == productId);
+
+            if (product == null)
+            {
+                return Json(new { success = false, message = "Ürün bulunamadı." });
+            }
+
+            // Check if the product is already in the cart
+            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
+
+            if (cartItem != null)
+            {
+                // If the product is already in the cart, increase the quantity
+                cartItem.Quantity += 1;
+            }
+            else
+            {
+                // If the product is not in the cart, add it
+                cart.CartItems.Add(new CartItem
+                {
+                    ProductId = productId,
+                    Quantity = 1,
+                    Price = (decimal)product.Price,  // Ensure the price is a decimal
+                    AddedAt = DateTime.UtcNow
+                });
+            }
+
+            // Recalculate the total amount of the cart using the UpdateTotalAmount method
+            cart.UpdateTotalAmount();
+            _context.SaveChanges();
+
+            // Return success response with the updated cart total
+            return Json(new { success = true, message = "Ürün sepete eklendi.", cartTotal = cart.TotalAmount.ToString("C") });
         }
 
-        // Kategoriye Göre Ürünleri Listele
-        public async Task<IActionResult> Category(Category category, int page = 1, int pageSize = 10)
-        {
-            var query = _context.products.Where(p => p.Category == category);
 
-            var totalProducts = await query.CountAsync();
-            var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
-            var products = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-
-            ViewData["TotalPages"] = totalPages;
-            ViewData["CurrentPage"] = page;
-            ViewData["Category"] = category;
-
-            return View("HomePage", products);
-        }
     }
 }

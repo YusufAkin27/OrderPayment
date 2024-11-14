@@ -86,62 +86,91 @@ public class UserController : Controller
             return Json(new { success = false, message = "Şifre en az 6 karakter uzunluğunda olmalıdır." });
         }
 
-        // Telefon numarasına göre kullanıcı kontrolü
-        if (_context.Users.Any(u => u.PhoneNumber == registerRequest.PhoneNumber))
+        // Kullanıcı ve telefon numarası kontrolü
+        var existingUser = _context.Users.FirstOrDefault(u => u.PhoneNumber == registerRequest.PhoneNumber);
+
+        if (existingUser != null)
         {
-            return Json(new { success = false, message = "Bu telefon numarasıyla zaten kayıtlı bir kullanıcı var." });
+            if (existingUser.IsActive)
+            {
+                return Json(new { success = false, message = "Bu telefon numarasıyla zaten aktif bir kullanıcı var." });
+            }
+            else
+            {
+                // Kullanıcı aktif değil, doğrulama kodu ile işlem yapılabilir
+                var verificationCode = GenerateVerificationCode();
+
+                var message = $"Sayın {registerRequest.FirstName} {registerRequest.LastName},\n\n" +
+                    "Hesabınızın güvenliği için aşağıdaki doğrulama kodunu kullanarak işleminizi tamamlayabilirsiniz:\n\n" +
+                    $"Doğrulama Kodu: {verificationCode}\n\n" +
+                    "Lütfen kodunuzu en kısa sürede giriniz. Kodunuzun geçerlilik süresi sınırlıdır.\n\n" +
+                    "Herhangi bir sorunuz varsa, destek ekibimizle iletişime geçebilirsiniz.\n\n" +
+                    "Teşekkür ederiz,\n" +
+                    "Hizmet Sağlayıcınız";
+
+                if (!_smsService.SendSms(registerRequest.PhoneNumber, message))
+                {
+                    return Json(new { success = false, message = "SMS gönderilemedi. Lütfen daha sonra tekrar deneyin." });
+                }
+
+                // Doğrulama kodunu kaydet
+                var verification = new VerificationCode
+                {
+                    Code = verificationCode,
+                    SentAt = DateTime.UtcNow,
+                    ExpiryInSeconds = 120, // 2 dakika geçerlilik süresi
+                    UserId = existingUser.Id
+                };
+
+                _context.VerificationCodes.Add(verification);
+                _context.SaveChanges();
+
+                return Json(new { success = true, message = "Doğrulama kodu gönderildi. Hesabınızı doğrulamak için kodu girin." });
+            }
         }
 
-        // Şifreyi hash'le
+        // Yeni kullanıcı oluştur
         var PasswordHash = BCrypt.Net.BCrypt.HashPassword(registerRequest.Password);
-
-        // Doğrulama kodu oluştur
-        var verificationCode = GenerateVerificationCode();
-
-        // SMS mesajı oluştur
-        var message = $"Sayın {registerRequest.FirstName} {registerRequest.LastName},\n\n" +
-            "Hesabınızın güvenliği için aşağıdaki doğrulama kodunu kullanarak işleminizi tamamlayabilirsiniz:\n\n" +
-            $"Doğrulama Kodu: {verificationCode}\n\n" +
-            "Lütfen kodunuzu en kısa sürede giriniz. Kodunuzun geçerlilik süresi sınırlıdır.\n\n" +
-            "Herhangi bir sorunuz varsa, destek ekibimizle iletişime geçebilirsiniz.\n\n" +
-            "Teşekkür ederiz,\n" +
-            "Hizmet Sağlayıcınız";
-
-        // SMS gönderimi
-        if (!_smsService.SendSms(registerRequest.PhoneNumber, message))
+        User user = new User
         {
-            return Json(new { success = false, message = "SMS gönderilemedi. Lütfen daha sonra tekrar deneyin." });
-        }
-
-        User user=new User();
-
-        user.CreatedAt = DateTime.UtcNow;
-        user.IsActive = false;
-        user.FirstName =registerRequest.FirstName;
-        user.LastName =registerRequest.LastName;
-        user.PhoneNumber = registerRequest.PhoneNumber;
-        user.Password=registerRequest.Password;
-        user.PasswordHash = PasswordHash;
-
-        // Kullanıcıyı kaydet
-       
+            CreatedAt = DateTime.UtcNow,
+            IsActive = false,
+            FirstName = registerRequest.FirstName,
+            LastName = registerRequest.LastName,
+            PhoneNumber = registerRequest.PhoneNumber,
+            Password = registerRequest.Password,
+            PasswordHash = PasswordHash
+        };
 
         _context.Users.Add(user);
         _context.SaveChanges();
 
-        // Doğrulama kodunu kaydet
-        var verification = new VerificationCode
+        // Yeni doğrulama kodu oluştur
+        var newVerificationCode = GenerateVerificationCode();
+        var newMessage = $"Sayın {registerRequest.FirstName} {registerRequest.LastName},\n\n" +
+            $"Doğrulama Kodunuz: {newVerificationCode}\n\n" +
+            "Hesabınızı doğrulamak için bu kodu kullanabilirsiniz.\n\n" +
+            "Teşekkürler,\n" +
+            "Hizmet Sağlayıcınız";
+
+        if (!_smsService.SendSms(registerRequest.PhoneNumber, newMessage))
         {
-            Code = verificationCode,
+            return Json(new { success = false, message = "SMS gönderilemedi. Lütfen daha sonra tekrar deneyin." });
+        }
+
+        // Doğrulama kodunu kaydet
+        var newVerification = new VerificationCode
+        {
+            Code = newVerificationCode,
             SentAt = DateTime.UtcNow,
-            ExpiryInSeconds = 120, // 2 dakika geçerlilik süresi
+            ExpiryInSeconds = 120,
             UserId = user.Id
         };
 
-        _context.VerificationCodes.Add(verification);
+        _context.VerificationCodes.Add(newVerification);
         _context.SaveChanges();
 
-        // Session'a kullanıcı bilgisi kaydet
+        // Kullanıcı bilgilerini Session'a kaydet
         HttpContext.Session.SetString("User", JsonConvert.SerializeObject(registerRequest, new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
@@ -164,9 +193,11 @@ public class UserController : Controller
             return Json(new { success = false, message = "Geçersiz kullanıcı verisi!" });
         }
 
-        // Kullanıcıyı veritabanından al
-        var user = JsonConvert.DeserializeObject<User>(userJson);
-        user = _context.Users.FirstOrDefault(u => u.Id == user.Id);
+        // Kullanıcı bilgilerini JSON’dan deserialize yap
+        var registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(userJson);
+
+        // Veritabanından kullanıcıyı çek
+        var user = _context.Users.FirstOrDefault(u => u.PhoneNumber == registerRequest.PhoneNumber && u.FirstName == registerRequest.FirstName && u.LastName == registerRequest.LastName);
 
         if (user == null)
         {
@@ -179,43 +210,42 @@ public class UserController : Controller
             .OrderByDescending(vc => vc.SentAt)
             .FirstOrDefault();
 
-        if (verification != null)
-        {
-            // Kod süresi dolmuş mu kontrol et
-            if (verification.IsExpired())
-            {
-                return Json(new { success = false, message = "Geçersiz veya süresi dolmuş doğrulama kodu!" });
-            }
-
-            // Kullanıcıyı aktif yap
-            user.IsActive = true;
-            _context.Users.Update(user); // Update ile güncelle
-
-            // Doğrulama kodunu geçersiz hale getir
-            verification.ExpiryInSeconds = 1;
-            _context.VerificationCodes.Update(verification);
-
-            try
-            {
-                _context.SaveChanges();
-
-                // Güncellenmiş kullanıcı verisini session'a kaydet
-                HttpContext.Session.SetString("User", JsonConvert.SerializeObject(user, new JsonSerializerSettings
-                {
-                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                }));
-
-                return Json(new { success = true, message = "Kullanıcı başarıyla kaydedildi ve aktif edildi." });
-            }
-            catch (Exception ex)
-            {
-                // Hata mesajı döndür
-                return Json(new { success = false, message = "Bir hata oluştu. Lütfen tekrar deneyin.", error = ex.Message });
-            }
-        }
-        else
+        if (verification == null)
         {
             return Json(new { success = false, message = "Geçersiz doğrulama kodu veya kodu daha önce kullanmışsınız." });
+        }
+
+        // Kodun süresinin dolup dolmadığını kontrol et
+        var elapsedTime = DateTime.UtcNow - verification.SentAt;
+        if (elapsedTime.TotalSeconds > verification.ExpiryInSeconds)
+        {
+            return Json(new { success = false, message = "Geçersiz veya süresi dolmuş doğrulama kodu!" });
+        }
+
+        // Kullanıcıyı aktif yap
+        user.IsActive = true;
+        _context.Users.Update(user);
+
+        // Doğrulama kodunu geçersiz hale getir
+        verification.ExpiryInSeconds = 1;
+        _context.VerificationCodes.Update(verification);
+
+        try
+        {
+            _context.SaveChanges();
+
+            // Güncellenmiş kullanıcı verisini session'a kaydet
+            HttpContext.Session.SetString("User", JsonConvert.SerializeObject(user, new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            }));
+
+            return Json(new { success = true, message = "Kullanıcı başarıyla kaydedildi ve aktif edildi." });
+        }
+        catch (Exception ex)
+        {
+            // Hata mesajı döndür
+            return Json(new { success = false, message = "Bir hata oluştu. Lütfen tekrar deneyin.", error = ex.Message });
         }
     }
 
@@ -474,7 +504,7 @@ public class UserController : Controller
         _context.SaveChanges();
 
         // Giriş işlemi başarılı, ana sayfaya yönlendir
-        return Json(new { success = true, message = "Doğrulama başarılı, giriş yapıldı.", redirectUrl = Url.Action("Index", "Home") });
+        return Json(new { success = true, message = "Doğrulama başarılı, giriş yapıldı.", redirectUrl = Url.Action("Home", "HomePage") });
     }
 
     [HttpPost]
