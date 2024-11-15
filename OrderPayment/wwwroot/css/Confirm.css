@@ -1,0 +1,198 @@
+﻿/* Genel Sayfa Düzeni */
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f7f9fc, #e1efff);
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #333;
+}
+
+/* Ana İçerik Kutusu (Checkout) */
+.checkout-container {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    width: 480px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Başlık ve Açıklamalar */
+.checkout-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+    .checkout-header h1 {
+        font-size: 28px;
+        margin-bottom: 12px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .checkout-header p {
+        font-size: 16px;
+        color: #777;
+        line-height: 1.5;
+    }
+
+/* Sipariş Özeti */
+.order-summary {
+    margin-bottom: 20px;
+}
+
+    .order-summary h2 {
+        font-size: 18px;
+        margin-bottom: 12px;
+        color: #444;
+        font-weight: bold;
+    }
+
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+    .order-item span {
+        font-size: 14px;
+        color: #666;
+    }
+
+.total-price {
+    text-align: right;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+}
+
+/* Kart Detayları */
+.card-details {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Kart */
+.card {
+    width: 100%;
+    height: 220px;
+    background: rgba(0, 0, 0, 0.3); /* Transparent background for card */
+    border-radius: 15px;
+    color: white;
+    padding: 20px;
+    position: relative;
+    transition: transform 0.7s ease, box-shadow 0.3s ease;
+    transform-style: preserve-3d;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px); /* Apply slight blur to the background */
+}
+
+    /* Kartın İçindeki Giriş Alanları */
+    .card input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: none;
+        border-radius: 8px;
+        background-color: rgba(255, 255, 255, 0.8); /* Transparent background for inputs */
+        font-size: 16px;
+        color: #333;
+        box-sizing: border-box;
+    }
+
+        /* Kartın İçindeki Giriş Alanları - Odaklanma Durumu */
+        .card input:focus {
+            outline: none;
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(28, 174, 227, 0.6);
+        }
+
+/* Kart Numarası */
+.card-number input {
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+/* Kart Sahibi */
+.card-owner input {
+    font-size: 16px;
+}
+
+/* Kartın Son Kullanma Tarihi ve CVV */
+.card-expiry-cvv input {
+    width: 48%;
+}
+
+.card-expiry-cvv {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Ödeme Butonu */
+.btn {
+    background-color: #28a745;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .btn:disabled {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    .btn:hover:not(:disabled) {
+        background-color: #218838;
+        box-shadow: 0 5px 15px rgba(0, 128, 0, 0.3);
+    }
+
+/* Giriş Alanları için Duyarlı Tasarım */
+@media (max-width: 600px) {
+    .checkout-container {
+        width: 90%;
+        padding: 15px;
+    }
+
+    .checkout-header h1 {
+        font-size: 22px;
+    }
+
+    .order-summary h2 {
+        font-size: 16px;
+    }
+
+    .order-item span {
+        font-size: 12px;
+    }
+
+    .total-price {
+        font-size: 16px;
+    }
+
+    .card-details {
+        margin-top: 20px;
+    }
+
+    .card {
+        height: 220px;
+    }
+
+    .card-expiry-cvv input {
+        width: 48%;
+    }
+}

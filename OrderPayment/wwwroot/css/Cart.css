@@ -1,154 +1,181 @@
-﻿/* Genel stil ayarları */
-body {
-    font-family: Arial, sans-serif;
+﻿body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f0f4f7, #e9eff6);
     margin: 0;
     padding: 0;
-    background-color: #f8f8f8;
-}
-
-/* Sepet Konteyneri */
-.cart-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-/* Sepet Ürünleri */
-.cart-items {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.checkout-container {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    width: 480px;
+    padding: 30px;
+    position: relative;
+    overflow: hidden;
+}
+
+.checkout-header {
+    text-align: center;
     margin-bottom: 20px;
 }
 
-/* Her Ürün */
-.cart-item {
-    display: flex;
-    align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
-    transition: background-color 0.3s ease;
-}
-
-    .cart-item:hover {
-        background-color: #f1f1f1;
+    .checkout-header h1 {
+        font-size: 26px;
+        margin-bottom: 12px;
     }
 
-    /* Ürün Resmi */
-    .cart-item img {
-        width: 100px;
-        height: 100px;
-        margin-right: 20px;
-        border-radius: 8px;
-    }
-
-/* Ürün Detayları */
-.item-details {
-    flex: 1;
-}
-
-    .item-details h5 {
+    .checkout-header p {
         font-size: 16px;
-        font-weight: 600;
-        margin-bottom: 5px;
+        color: #666;
     }
 
-    .item-details p {
-        margin: 5px 0;
-        font-size: 14px;
-    }
-
-/* Sepet Toplamı ve Butonlar */
-.cart-summary {
-    margin-top: 30px;
-    padding-top: 20px;
-    border-top: 2px solid #ddd;
-    text-align: center;
+.order-summary {
+    margin-bottom: 20px;
 }
 
-    .cart-summary p {
-        font-size: 16px;
-        margin: 10px 0;
-    }
-
-    .cart-summary .btn-complete-order {
-        background-color: #007bff;
-        width: 100%;
-        padding: 15px;
+    .order-summary h2 {
         font-size: 18px;
-        border-radius: 8px;
-        transition: background-color 0.3s ease;
+        margin-bottom: 12px;
     }
 
-        .cart-summary .btn-complete-order:hover {
-            background-color: #0056b3;
-        }
-
-/* Ürün Adedi Değiştirme ve Silme Butonları */
-.cart-item-actions {
+.order-item {
     display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+    .order-item span {
+        font-size: 14px;
+        color: #444;
+    }
+
+.total-price {
+    text-align: right;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #333;
+}
+
+.card-details {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
 }
 
-.btn-change-quantity, .btn-remove {
-    padding: 8px;
-    border: none;
+.card {
+    width: 100%;
+    height: 220px;
+    background: linear-gradient(135deg, #4d4d4d, #2b2b2b);
+    border-radius: 10px;
     color: white;
-    cursor: pointer;
-    border-radius: 4px;
-    margin: 0 5px;
+    padding: 20px;
+    position: relative;
+    transition: transform 0.8s ease-in-out;
+    transform-style: preserve-3d;
+    transform: rotateY(0deg);
 }
 
-.btn-change-quantity {
-    background-color: #28a745;
+.card-front,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 10px;
+    box-sizing: border-box;
+    transition: opacity 0.5s ease-in-out;
+    backface-visibility: hidden;
 }
 
-.btn-remove {
-    background-color: #dc3545;
+.card-back {
+    transform: rotateY(180deg);
 }
 
-.btn-change-quantity:hover {
-    background-color: #218838;
+.card-number input,
+.card-owner input,
+.card-expiry-cvv input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    color: #333;
 }
 
-.btn-remove:hover {
-    background-color: #c82333;
-}
-
-/* Responsive Düzenleme */
-@media (max-width: 768px) {
-    /* Sepet ürünleri dikey hale gelir */
-    .cart-item {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-        .cart-item img {
-            margin-bottom: 10px;
-        }
-
-    /* Sepet özetini merkezle */
-    .cart-summary {
-        margin-top: 40px;
-    }
-
-        /* Butonları tam genişlikte yap */
-        .cart-summary .btn-complete-order {
-            width: 100%;
-            font-size: 16px;
-        }
-}
-
-/* Genel buton stilleri */
-button {
-    outline: none;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-}
-
-    button:focus {
+    .card-number input:focus,
+    .card-owner input:focus,
+    .card-expiry-cvv input:focus {
         outline: none;
+        background-color: #fff;
     }
+
+.card-number input {
+    font-size: 18px;
+}
+
+.card-owner input {
+    font-size: 16px;
+}
+
+.card-expiry-cvv {
+    display: flex;
+    justify-content: space-between;
+}
+
+.card-details input {
+    margin-bottom: 15px;
+}
+
+.card-details .card-front input,
+.card-details .card-back input {
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.card-details .card-back {
+    display: none;
+}
+
+.card.expanded .card-back {
+    display: flex;
+}
+
+.card.expanded .card-front {
+    display: none;
+}
+
+.btn {
+    background-color: #28a745;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+    .btn:disabled {
+        background-color: #ddd;
+        cursor: not-allowed;
+    }
+
+    .btn:hover:not(:disabled) {
+        background-color: #218838;
+    }
+
+.card-details .card-back input {
+    background-color: rgba(255, 255, 255, 0.9);
+}
