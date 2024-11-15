@@ -1,6 +1,7 @@
 ﻿body {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    background-color: #121212;
+    color: #e0e0e0;
 }
 
 .container {
@@ -13,7 +14,7 @@
     text-align: center;
     margin: 20px 0;
     font-size: 2em;
-    color: #333;
+    color: #ffffff;
 }
 
 #product-grid {
@@ -24,12 +25,11 @@
 }
 
 .product-card {
-    width: 100%;
-    max-width: 300px;
-    border: 1px solid #ddd;
+    border: 1px solid #333;
     border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s;
 }
 
@@ -38,9 +38,9 @@
     }
 
 .card-image {
-    position: relative;
-    overflow: hidden;
     height: 200px;
+    overflow: hidden;
+    position: relative;
 }
 
 .product-image {
@@ -61,32 +61,32 @@
 
 .card-title {
     font-size: 1.2em;
-    color: #333;
+    color: #ffffff;
 }
 
 .card-price {
     font-size: 1.1em;
-    color: #007bff;
+    color: #ff9800;
     margin-top: 5px;
 }
 
 .card-category,
 .card-quantity {
-    color: #555;
+    color: #b3b3b3;
     font-size: 0.9em;
     margin: 5px 0;
 }
 
 .add-to-cart-btn {
-    background-color: #28a745;
-    color: #fff;
+    background-color: #ff9800;
+    color: #ffffff;
     padding: 10px 20px;
-    border: none;
+    border: 1px solid #ff9800;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
     .add-to-cart-btn:hover {
-        background-color: #218838;
+        background-color: #e68a00;
     }

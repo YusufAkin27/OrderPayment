@@ -1,102 +1,116 @@
-﻿ * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+﻿/* Genel Ayarlar */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #f7f7f7, #e0e0e0);
-        }
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #222222, #1a1a1a);
+    color: #f0f0f0;
+}
 
-        .container {
-            background: #fff;
-            border-radius: 8px;
-            padding: 30px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
+/* Konteyner */
+.container {
+    background: #333333;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
 
-        h1 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 20px;
-        }
+/* Başlık */
+h1 {
+    font-size: 24px;
+    color: #ff9800;
+    margin-bottom: 20px;
+}
 
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+/* Giriş Alanları */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
 
-            .input-group label {
-                display: block;
-                font-size: 14px;
-                color: #555;
-            }
+.input-group label {
+    display: block;
+    font-size: 14px;
+    color: #f0f0f0;
+}
 
-            .input-group input {
-                width: 100%;
-                padding: 10px;
-                font-size: 16px;
-                border: 1px solid #ddd;
-                border-radius: 5px;
-                outline: none;
-            }
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #555555;
+    border-radius: 5px;
+    outline: none;
+    background: #222222;
+    color: #f0f0f0;
+}
 
-                .input-group input:focus {
-                    border-color: #1E90FF;
-                }
+.input-group input:focus {
+    border-color: #ff9800;
+}
 
-        .password-toggle {
-            position: relative;
-        }
+/* Şifre Göster/Gizle */
+.password-toggle {
+    position: relative;
+}
 
-        .toggle-btn {
-            position: absolute;
-            right: 10px;
-            top: 65%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #666;
-        }
+.toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ff9800;
+}
 
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #4CAF50;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+/* Buton */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #ff9800;
+    color: #222222;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
 
-            button:hover {
-                background: #43a047;
-            }
+button:hover {
+    background: #e68900;
+}
 
-        .additional-links {
-            margin-top: 15px;
-            font-size: 14px;
-        }
+/* Ek Bağlantılar */
+.additional-links {
+    margin-top: 15px;
+    font-size: 14px;
+}
 
-            .additional-links a {
-                color: #1E90FF;
-                text-decoration: none;
-            }
+.additional-links a {
+    color: #ff9800;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
 
-                .additional-links a:hover {
-                    text-decoration: underline;
-                }
+.additional-links a:hover {
+    color: #e68900;
+    text-decoration: underline;
+}
 
-        #error-message {
-            color: red;
-            margin-top: 10px;
-            font-size: 14px;
-        }
+/* Hata Mesajları */
+#error-message {
+    color: #ff4d4d;
+    margin-top: 10px;
+    font-size: 14px;
+}

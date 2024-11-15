@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<OrderPayment.Models.Product>
 
-@await Html.PartialAsync("UserNavbar")
-
+@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -17,7 +18,7 @@
         <div id="product-grid" class="row">
             @foreach (var product in Model)
             {
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <div class="card product-card">
                         <div class="card-image">
                             <img src="@product.Image" alt="@product.Name" class="product-image" />
@@ -27,7 +28,6 @@
                             <p class="card-price">@product.Price.ToString("C")</p>
                             <p class="card-category">Kategori: @product.Category</p>
                             <p class="card-quantity">Miktar: @product.Quantity @product.Unit</p>
-                            <!-- Use data-product-id attribute to pass the product ID -->
                             <button class="btn btn-primary add-to-cart-btn" data-product-id="@product.Id">Sepete Ekle</button>
                         </div>
                     </div>
@@ -35,14 +35,8 @@
             }
         </div>
 
-        <!-- Display cart total (example) -->
-        <<div id="cart-total-container">
-            <p><strong>Sepet Toplamı: </strong><span id="cart-total">0</span> TL</p>
-        </div>
-
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <script src="~/js/HomePage.js"></script>
 </body>
 </html>

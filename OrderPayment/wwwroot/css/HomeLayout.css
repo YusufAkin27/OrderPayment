@@ -1,0 +1,16 @@
+﻿body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+.navbar {
+    background-color: #1c1c1c; /* Siyah ile uyumlu koyu bir renk */
+}
+
+.navbar-brand, .nav-link {
+    color: #e0e0e0;
+}
+
+    .nav-link:hover {
+        color: #ff9800; /* Turuncu renk ile vurgulama */
+    }

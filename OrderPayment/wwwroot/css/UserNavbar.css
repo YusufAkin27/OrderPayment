@@ -1,0 +1,38 @@
+﻿/* Navbar özel stiller */
+.navbar-custom {
+    background-color: #1e1e1e; /* Siyah arka plan */
+}
+
+    .navbar-custom .navbar-brand,
+    .navbar-custom .nav-link,
+    .navbar-custom .dropdown-item {
+        color: #e0e0e0; /* Okunabilir gri */
+    }
+
+        .navbar-custom .nav-link:hover,
+        .navbar-custom .dropdown-item:hover {
+            color: #ff9800; /* Kontrast oluşturacak turuncu */
+        }
+
+.cart-icon .badge {
+    background-color: #ff9800; /* Kontrast turuncu */
+    color: #000; /* Siyah iç yazı */
+}
+
+.btn-outline-light {
+    border-color: #ff9800;
+    color: #ff9800;
+}
+
+    .btn-outline-light:hover {
+        background-color: #ff9800;
+        color: #1e1e1e;
+    }
+
+.dropdown-menu {
+    background-color: #2a2a2a; /* Siyah tonlarında dropdown arka planı */
+}
+
+.dropdown-item.text-danger {
+    color: #e57373; /* Açık kırmızı çıkış yap butonu */
+}
