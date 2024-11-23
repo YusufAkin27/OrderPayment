@@ -1,0 +1,74 @@
+﻿@model IEnumerable<OrderPayment.Models.Product>
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h2>Ürün Listesi</h2>
+
+<table>
+    <thead>
+        <link rel="stylesheet" href="~/css/Admin/styles.css">
+
+        <tr>
+            <th>Ürün Adı</th>
+            <th>Fiyat</th>
+            <th>Stok Miktarı</th>
+            <th>Birim</th>
+            <th>Kategori</th>
+            <th>Resim</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr id="product-@product.Id">
+                <td>@product.Name</td>
+                <td>@product.Price</td>
+                <td>@product.Quantity</td>
+                <td>@product.Unit</td>  <!-- Birim bilgisi burada gösterilecek -->
+                <td>@product.Category</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(product.Image))
+                    {
+                        <img src="@(product.Image)" alt="Ürün Resmi" style="width: 50px; height: 50px;">
+                    }
+                    else
+                    {
+                        <p>Resim yok</p>
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditProduct" asp-route-id="@product.Id" class="btn btn-primary">Düzenle</a>
+                    <button onclick="deleteProduct(@product.Id)" class="btn btn-danger">Sil</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Stil dosyasına bootstrap kütüphanesi eklendiğinde butonlara bu sınıflar uygulanacaktır -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    function deleteProduct(id) {
+        if (confirm("Bu ürünü silmek istediğinize emin misiniz?")) {
+            $.ajax({
+                url: '@Url.Action("DeleteProduct", "Admin")',
+                type: 'POST',
+                data: { id: id },
+                success: function (response) {
+                    if (response.success) {
+                        $('#product-' + id).remove();
+                    } else {
+                        alert("Ürün silinirken bir hata oluştu.");
+                    }
+                },
+                error: function () {
+                    alert("Ürün silinirken bir hata oluştu.");
+                }
+            });
+        }
+    }
+</script>

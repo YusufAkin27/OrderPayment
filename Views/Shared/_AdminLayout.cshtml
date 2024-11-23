@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Admin Paneli</title>
+    
+    <style>
+        /* Genel Stil Ayarları */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar ve Dropdown Menü Ayarları */
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+            .sidebar h1 {
+                font-size: 24px;
+                margin-bottom: 20px;
+            }
+
+            .sidebar nav ul {
+                list-style-type: none;
+                padding: 0;
+            }
+
+                .sidebar nav ul li {
+                    margin-bottom: 10px;
+                    position: relative;
+                }
+
+                    .sidebar nav ul li a {
+                        color: #fff;
+                        text-decoration: none;
+                        font-size: 18px;
+                        display: block;
+                        padding: 10px;
+                    }
+
+                    /* Ürünler Dropdown Ayarları */
+                    .sidebar nav ul li .dropdown-menu {
+                        display: none;
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        background-color: #444;
+                        min-width: 200px;
+                        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+                        z-index: 1;
+                    }
+
+                    .sidebar nav ul li:hover .dropdown-menu {
+                        display: block;
+                    }
+
+                    .sidebar nav ul li .dropdown-menu li {
+                        margin-bottom: 0;
+                    }
+
+                        .sidebar nav ul li .dropdown-menu li a {
+                            padding: 12px 16px;
+                            font-size: 16px;
+                        }
+
+                            /* Hover efekti */
+                            .sidebar nav ul li a:hover,
+                            .sidebar nav ul li .dropdown-menu li a:hover {
+                                background-color: #555;
+                            }
+
+        /* İçerik Ayarları */
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            background-color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <aside class="sidebar">
+            <h1>Admin Paneli</h1>
+            <nav>
+                <ul>
+                    <li><a href="@Url.Action("AdminPanel", "Admin")">Ana Sayfa</a></li>
+                    <li>
+                        <a href="#">Ürünler</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("AddProduct", "Admin")">Ürün Ekle</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="@Url.Action("OrderList", "Admin")">Sipariş Durumu</a></li>
+                    <li><a href="@Url.Action("Users", "Admin")">Kullanıcılar</a></li>
+                    <li><a href="@Url.Action("Logout", "Admin")">Çıkış Yap</a></li>
+
+                </ul>
+            </nav>
+        </aside>
+        <main class="content">
+            @RenderBody()
+        </main>
+    </div>
+    <script src="~/js/Admin/AdminPanelscript.js"></script>
+</body>
+</html>

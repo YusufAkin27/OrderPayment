@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sipariş Listesi</title>
+    <link rel="stylesheet" href="~/css/Admin/Order.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sipariş Listesi</h1>
+
+        <div class="summary-cards">
+            <div class="card">
+                <h3>Toplam Sipariş</h3>
+                <p class="card-value">24</p>
+            </div>
+            <div class="card">
+                <h3>Toplam Gelir</h3>
+                <p class="card-value">₺4,580</p>
+            </div>
+            <div class="card">
+                <h3>Bekleyen Siparişler</h3>
+                <p class="card-value">6</p>
+            </div>
+            <div class="card">
+                <h3>Toplam Müşteri</h3>
+                <p class="card-value">18</p>
+            </div>
+        </div>
+
+        <div class="filters">
+            <input type="text" id="search" placeholder="Sipariş ID veya müşteri ara...">
+            <select id="status-filter">
+                <option value="all">Tüm Durumlar</option>
+                <option value="Beklemede">Beklemede</option>
+                <option value="Onaylandi">Onaylandı</option>
+                <option value="Kargolandi">Kargoya Verildi</option>
+                <option value="TeslimEdildi">Teslim Edildi</option>
+                <option value="IptalEdildi">İptal Edildi</option>
+            </select>
+        </div>
+
+        <table class="order-table">
+            <thead>
+                <tr>
+                    <th>Sipariş ID</th>
+                    <th>Kullanıcı</th>
+                    <th>Tarih</th>
+                    <th>Toplam Tutar</th>
+                    <th>Durum</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.User?.FirstName @order.User?.LastName</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td>@order.TotalAmount.ToString("C")</td>
+                        <td>
+                            <span class="status-badge @(order.Status.ToString().ToLower())">@order.Status</span>
+                        </td>
+                        <td>
+                            <a href="/Admin/OrderDetails/@order.OrderId" class="btn btn-primary">Detaylar</a>
+                            <form action="/Admin/UpdateStatus" method="post" class="inline-form">
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                <select name="newStatus" onchange="this.form.submit()">
+                                    @foreach (var status in Enum.GetValues(typeof(OrderStatus)).Cast<OrderStatus>())
+                                    {
+                                        var selected = status == order.Status ? "selected" : "";
+                                        <option value="@status" selected="@selected">@status</option>
+                                    }
+                                </select>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

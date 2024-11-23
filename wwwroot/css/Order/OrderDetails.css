@@ -1,0 +1,183 @@
+﻿/* Genel Konteyner Stilleri */
+.orders-container {
+    margin: 40px auto;
+    max-width: 1200px;
+    padding: 100px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a1a, #222222, #457b9d); /* Daha koyu degrade + mavi */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid #333333;
+    overflow: hidden;
+}
+
+p {
+    color: #f1faee; /* Yazı rengi */
+}
+
+/* Başlık Stilleri */
+.orders-container h2 {
+    text-align: center;
+    color: #f1faee; /* Beyaz başlık rengi */
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #ff9800; /* Alt çizgi efekti */
+    display: inline-block;
+    padding-bottom: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Sipariş bulunmayan mesaj */
+.no-orders {
+    text-align: center;
+    font-size: 20px;
+    color: #f1faee; /* Beyaz tonunda yazı */
+    margin-top: 30px;
+    font-style: italic;
+    background: #333333; /* Koyu gri arka plan */
+    padding: 15px;
+    border-radius: 8px;
+}
+
+/* Sipariş Tablosu */
+.orders-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    /* Tablo Başlıkları */
+    .orders-table thead {
+        background-color: #ff9800; /* Turuncu başlık arka plan rengi */
+        color: #1d3557; /* Başlık metin rengi */
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 14px;
+        text-align: left;
+        border-bottom: 1px solid #333333;
+    }
+
+    .orders-table th {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 14px;
+        letter-spacing: 1px;
+    }
+
+    .orders-table tr:nth-child(even) {
+        background-color: #333333; /* Alternatif satırlarda daha koyu gri */
+    }
+
+    .orders-table tr:hover {
+        background-color: #444444; /* Hover durumunda daha belirgin gri */
+    }
+
+/* Sipariş Durum Etiketleri */
+.status-label {
+    display: inline-block;
+    padding: 6px 14px;
+    font-weight: bold;
+    color: #fff;
+    border-radius: 12px;
+    text-transform: capitalize;
+    font-size: 13px;
+}
+
+    .status-label.beklemede {
+        background-color: #ffc107; /* Sarı */
+    }
+
+    .status-label.onaylandi {
+        background-color: #28a745; /* Yeşil */
+    }
+
+    .status-label.kargolandı {
+        background-color: #007bff; /* Mavi */
+    }
+
+    .status-label.teslimedildi {
+        background-color: #17a2b8; /* Açık mavi */
+    }
+
+    .status-label.iptalEdildi {
+        background-color: #ff4d4d; /* Kırmızı */
+    }
+
+/* Ürün Resmi */
+.product-image {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #ff9800; /* Turuncu çerçeve */
+}
+
+/* Ürünler Tablosu */
+.order-items-table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    border: 1px solid #333333;
+}
+
+    .order-items-table th,
+    .order-items-table td {
+        padding: 12px;
+        border: none;
+    }
+
+    .order-items-table th {
+        background-color: #ff9800;
+        color: #1d3557; /* Başlık yazı rengi */
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+/* Geri Butonu */
+.back-button {
+    text-align: center;
+    margin-top: 40px;
+}
+
+    .back-button .btn {
+        background-color: #555555; /* Koyu gri arka plan */
+        color: #f1faee; /* Beyaz metin rengi */
+        padding: 12px 30px;
+        font-size: 16px;
+        text-decoration: none;
+        border-radius: 25px;
+        border: 2px solid #ff9800; /* Turuncu kenarlık */
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+        .back-button .btn:hover {
+            background-color: #e68900; /* Hover için sıcak turuncu */
+            transform: scale(1.05);
+        }
+
+    /* Sayfa Başlığı ve Buton için Animasyon */
+    .orders-container h2,
+    .back-button .btn {
+        animation: fadeIn 0.8s ease-out;
+    }
+
+/* FadeIn Animasyonu */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

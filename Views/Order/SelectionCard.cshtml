@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıtlı Kartlar</title>
+    <link rel="stylesheet" href="~/css/UserCard/GetAllCards.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Yeni Kart Ekle Butonu -->
+        <div class="new-card-btn">
+            <a href="@Url.Action("AddCard", "UserCard")">Yeni Kart Ekle</a>
+        </div>
+
+        <h2>Kayıtlı Kartlar</h2>
+
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="card-list">
+                @foreach (var card in Model)
+                {
+                    <div class="card" id="card-@card.Id">
+                        <div class="actions">
+                            <button class="select" onclick="selectCard(@card.Id)">Seç</button>
+                        </div>
+
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-number">
+                                    @card.CardNumber.Substring(card.CardNumber.Length - 4).PadLeft(card.CardNumber.Length, '*')
+                                </div>
+                                <div class="card-holder">@card.CardHolderName</div>
+                            </div>
+                            <div class="card-back">
+                                <div class="expiry-label">Son Kullanma Tarihi:</div>
+                                <div class="expiry">@card.ExpiryMonth/@card.ExpiryYear</div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>Kullanıcıya ait kart bulunmamaktadır.</p>
+        }
+    </div>
+
+    
+        <script>
+       
+            function selectCard(cardId) {
+                // Kullanıcıya seçim onayı soruluyor
+                if (!confirm("Bu kartı seçmek istediğinizden emin misiniz?")) {
+                    return; // İşlem iptal edildi
+                }
+
+            // Seçilen kartın ID'sini backend'e JSON formatında gönder
+            $.ajax({
+                url: "/Order/SelectionCard",  // URL'yi kontrol edin
+            type: "POST",
+            contentType: "application/json",  // JSON formatında veri gönderiyoruz
+                data: JSON.stringify({ CardId: cardId }),  // Veriyi JSON olarak gönderiyoruz
+            success: function (response) {
+                alert(response.message || "Kart başarıyla seçildi!");
+            window.location.href = "/Order/Confirm"; // Başarılı işlem sonrası yönlendirme
+                    },
+            error: function (xhr) {
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                alert("Hata: " + xhr.responseJSON.message); // Hata mesajını göster
+                        } else {
+                alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                        }
+                    }
+                });
+            }
+    </script>
+
+
+   
+</body>
+</html>

@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Auth/Login.css">
+</head>
+<body class="bg-dark text-light">
+
+    <div class="container">
+        <h1>Giriş Yap</h1>
+        <form id="loginForm" action="/User/Login" method="POST">
+            <!-- Telefon Numarası Girişi -->
+            <div class="input-group">
+                <label for="phone">Telefon Numarası</label>
+                <input type="text" id="phone" name="phone" placeholder="(5xx) xxx xx xx" maxlength="15" required>
+            </div>
+
+            <!-- Şifre Girişi -->
+            <div class="input-group password-toggle">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" placeholder="Şifreniz" required>
+                <span class="toggle-btn" onclick="togglePassword()">
+                    <i class="fas fa-eye"></i>
+                </span>
+            </div>
+
+            <!-- Giriş Yap Butonu -->
+            <button type="submit">Giriş Yap</button>
+            <div id="error-message"></div>
+        </form>
+
+        <!-- Ek Bağlantılar -->
+        <div class="additional-links">
+            <a href="/Auth/ForgotPassword">Şifrenizi mi unuttunuz?</a> |
+            <a href="/Auth/Register">Kayıt Ol</a>
+        </div>
+    </div>
+
+    <script src="~/js/Auth/Login.js"> </script>
+
+</body>
+</html>

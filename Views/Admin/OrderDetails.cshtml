@@ -1,0 +1,64 @@
+﻿@model OrderPayment.Models.Order
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"Sipariş Detayları - {Model.OrderId}";
+}
+
+<link rel="stylesheet" href="~/css/Admin/OrderDetails.css" />
+
+<div class="container">
+    <h1 class="page-title">Sipariş Detayları - @Model.OrderId</h1>
+
+    <div class="order-summary">
+        <div class="summary-item">
+            <span class="label">Müşteri:</span>
+            <span class="value">@Model.User?.FirstName @Model.User?.LastName</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">Sipariş Tarihi:</span>
+            <span class="value">@Model.OrderDate.ToString("dd.MM.yyyy HH:mm")</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">Toplam Tutar:</span>
+            <span class="value">@Model.TotalAmount.ToString("C")</span>
+        </div>
+        <div class="summary-item">
+            <span class="label">Durum:</span>
+            <span class="value status-@Model.Status.ToString().ToLower()">@Model.Status</span>
+        </div>
+    </div>
+
+    <h2 class="section-title">Sipariş Ürünleri</h2>
+    <table class="order-items">
+        <thead>
+            <tr>
+                <th>Ürün Adı</th>
+                <th>Miktar</th>
+                <th>Birim Fiyat</th>
+                <th>Toplam</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("C")</td>
+                    <td>@item.TotalPrice.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3">Genel Toplam:</td>
+                <td>@Model.TotalAmount.ToString("C")</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="actions">
+        <a asp-action="OrderList" asp-controller="Admin" class="btn btn-secondary">Siparişlere Geri Dön</a>
+        <a asp-action="EditOrder" asp-controller="Admin" asp-route-id="@Model.OrderId" class="btn btn-primary">Siparişi Düzenle</a>
+    </div>
+</div>

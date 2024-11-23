@@ -1,0 +1,82 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Ekle - Admin Paneli</title>
+    <link rel="stylesheet" href="~/css/Admin/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+
+        <main class="content">
+            <h2>Yeni Ürün Ekle</h2>
+
+            <form asp-action="AddProduct" method="post">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                    </div>
+                }
+
+                <label for="name">Ürün Adı:</label>
+                <input type="text" id="name" name="Name" required />
+
+                <label for="stock">Stok Miktarı:</label>
+                <input type="number" id="stock" name="Quantity" required />
+
+                <label for="unit">Birim:</label>
+                <select id="unit" name="Unit">
+                    <option value="Kilogram">Kilogram</option>
+                    <option value="Litre">Litre</option>
+                </select>
+
+                <label for="price">Fiyat (TL):</label>
+                <input type="number" id="price" name="Price" step="0.01" required />
+
+                <label for="category">Kategori:</label>
+                <select id="category" name="Category">
+                    <option value="sütÜrünleri">SütÜrünleri</option>
+                    <option value="etÜrünleri">EtÜrünleri</option>
+                    <option value="meyveler">Meyveler</option>
+                    <option value="sebzeler">Sebzeler</option>
+                </select>
+
+                <label for="imageUrl">Resim URL:</label>
+                <input type="text" id="imageUrl" name="Image" placeholder="Resim URL'sini buraya girin" oninput="previewImage()" />
+
+                <!-- Resim önizleme alanı -->
+                <img id="preview" alt="Ürün Resmi" style="width:150px;height:auto; display:none; margin-top:10px;">
+
+                <script>
+                    function previewImage() {
+                        const url = document.getElementById('imageUrl').value;
+                        const imgPreview = document.getElementById('preview');
+
+                        // URL geçerli mi diye kontrol et
+                        if (url) {
+                            imgPreview.src = url;
+                            imgPreview.style.display = 'block';
+                        } else {
+                            imgPreview.style.display = 'none';
+                        }
+                    }
+                </script>
+
+
+                <button type="submit">Ürün Ekle</button>
+            </form>
+
+        </main>
+    </div>
+    <script src="~/js/Admin/AddProductscript.js"></script>
+</body>
+</html>

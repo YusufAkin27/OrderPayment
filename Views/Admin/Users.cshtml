@@ -1,0 +1,80 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcılar Listesi</title>
+    <link rel="stylesheet" href="~/css/Admin/User.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Kullanıcılar Listesi</h2>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Ad</th>
+                        <th>Soyad</th>
+                        <th>Telefon Numarası</th>
+                        <th>Oluşturulma Tarihi</th>
+                        <th>Aktif Mi?</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr id="User-@user.Id">
+                            <td>@user.Id</td>
+                            <td>@user.FirstName</td>
+                            <td>@user.LastName</td>
+                            <td>@user.PhoneNumber</td>
+                            <td>@user.CreatedAt.ToShortDateString()</td>
+                            <td>@(user.IsActive ? "Evet" : "Hayır")</td>
+                            <td>
+                                <a href="@Url.Action("EditUser", "Admin", new { id = user.Id })" class="btn btn-warning">Düzenle</a>
+                                <button class="btn btn-danger" onclick="deleteUser(@user.Id)">Sil</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function deleteUser(id) {
+            if (confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) {
+                fetch('/Admin/DeleteUser', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Kullanıcı silinirken bir hata oluştu.');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('User-' + id).style.display = 'none';
+                        } else {
+                            alert(data.message || "Kullanıcı silinirken bir hata oluştu.");
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message || "Kullanıcı silinirken bir hata oluştu.");
+                        console.error('Hata:', error);
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

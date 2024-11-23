@@ -1,0 +1,88 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Bilgilerini Düzenle</title>
+    
+    <link rel="stylesheet" href="~/css/Admin/User.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Kullanıcı Bilgilerini Düzenle</h2>
+
+        <form id="editUserForm" method="post" class="form">
+            <input type="hidden" id="Id" name="Id" value="@Model.Id">
+
+            <div class="form-group">
+                <label for="FirstName">Ad</label>
+                <input type="text" id="FirstName" name="FirstName" value="@Model.FirstName">
+                @if (!string.IsNullOrEmpty(Model.FirstName))
+                {
+                    <small class="help-text">Adınızı değiştirmek isterseniz burayı güncelleyebilirsiniz.</small>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="LastName">Soyad</label>
+                <input type="text" id="LastName" name="LastName" value="@Model.LastName">
+                @if (!string.IsNullOrEmpty(Model.LastName))
+                {
+                    <small class="help-text">Soyadınızı değiştirmek isterseniz burayı güncelleyebilirsiniz.</small>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="PhoneNumber">Telefon Numarası</label>
+                <input type="text" id="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber">
+                @if (!string.IsNullOrEmpty(Model.PhoneNumber))
+                {
+                    <small class="help-text">Telefon numaranızı değiştirmek isterseniz burayı güncelleyebilirsiniz.</small>
+                }
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="IsActive" name="IsActive" @(Model.IsActive ? "checked" : "")>
+                <label for="IsActive">Aktif Mi?</label>
+                @if (Model.IsActive)
+                {
+                    <small class="help-text">Kullanıcı aktif durumunda. Durumu değiştirmek isterseniz burayı güncelleyebilirsiniz.</small>
+                }
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+                <a href="@Url.Action("Users", "Admin")" class="btn btn-secondary">İptal Et</a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('editUserForm').addEventListener('submit', function (event) {
+            var firstName = document.getElementById('FirstName').value;
+            var lastName = document.getElementById('LastName').value;
+            var phoneNumber = document.getElementById('PhoneNumber').value;
+            var errorMessage = '';
+
+            if (!firstName) {
+                errorMessage += 'Ad alanı boş olamaz.\n';
+            }
+            if (!lastName) {
+                errorMessage += 'Soyad alanı boş olamaz.\n';
+            }
+            if (!phoneNumber) {
+                errorMessage += 'Telefon numarası boş olamaz.\n';
+            }
+
+            if (errorMessage) {
+                event.preventDefault();
+                alert(errorMessage);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+﻿@model List<OrderPayment.Models.request.AddressViewModel>
+
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adres Seçimi</title>
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/Address/GetAllAddresses.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sayfa Başlığı -->
+        <h2><i class="fas fa-map-marker-alt"></i> Adres Seçimi</h2>
+
+        <!-- Yeni Adres Ekle Butonu -->
+        <div class="new-address-btn">
+            <a href="@Url.Action("AddAddress", "Address")" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Yeni Adres Ekle
+            </a>
+        </div>
+
+        <!-- Adresler Listesi -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="address-list">
+                @foreach (var address in Model)
+                {
+                    <div class="address-card" id="address-@address.Id">
+                        <h3><i class="fas fa-home"></i> @address.AddressTitle</h3>
+                        <p><strong>Şehir:</strong> @address.City</p>
+                        <p><strong>İlçe:</strong> @address.District</p>
+                        <p><strong>Mahalle:</strong> @address.Neighborhood</p>
+                        <p><strong>Sokak Adresi:</strong> @address.StreetAddress</p>
+                        <p><strong>Telefon:</strong> @address.PhoneNumber</p>
+
+
+                        <button class="btn-select-address" onclick="selectAddress(@address.Id)">
+                            <i class="fas fa-check-circle"></i> Bu Adresi Seç
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p><i class="fas fa-exclamation-triangle"></i> Kayıtlı adres bulunmamaktadır.</p>
+        }
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script>
+        function selectAddress(addressId) {
+            // Kullanıcıya seçim onayı soruluyor
+            if (!confirm("Bu adresi seçmek istediğinizden emin misiniz?")) {
+                return;
+            }
+
+            // AJAX isteğiyle adres ID gönderimi
+            $.ajax({
+                url: "/Order/SelectionAddress",  // Doğru URL'yi kullanıyoruz
+                type: "POST",
+                contentType: "application/json",  // JSON formatında veri gönderiyoruz
+                data: JSON.stringify({ addressId: addressId }),  // addressId parametresini JSON olarak gönderiyoruz
+                success: function (response) {
+                    // Başarı mesajını kullanıcıya göster
+                    alert(response.message || "Adres başarıyla seçildi!");
+                    // Başarıyla seçildiyse, seçilen adresi işaretleyebiliriz
+                    window.location.href = "/Order/SelectionCard"; // Seçim sonrası başka bir sayfaya yönlendirebilirsiniz
+                },
+                error: function (xhr, status, error) {
+                    // Hata mesajını kullanıcıya göster
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        alert("Hata: " + xhr.responseJSON.message);
+                    } else {
+                        alert("Bir hata oluştu. Lütfen tekrar deneyin.");
+                    }
+                }
+            });
+        }
+
+    </script>
+
+</body>
+
+</html>

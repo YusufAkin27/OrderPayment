@@ -1,0 +1,244 @@
+﻿/* Genel Body ve Arka Plan */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fc;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top */
+    height: 100vh;
+}
+
+/* Kartlar İçin Konteyner */
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin-top: 50px; /* Add some space at the top */
+    text-align: center;
+}
+
+/* Yeni Kart Ekle Butonu */
+.new-card-btn {
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+    .new-card-btn a {
+        text-decoration: none;
+        padding: 12px 25px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 8px;
+        font-size: 1.1em;
+        font-weight: bold;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .new-card-btn a:hover {
+            background-color: #0056b3;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+h2 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Kart Listesi */
+.card-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start; /* Align cards to the top */
+    gap: 30px;
+}
+
+.card {
+    width: 320px;
+    height: 250px;
+    perspective: 1500px;
+}
+
+.card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease-out;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.07);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Kartın Ön Yüzü */
+.card-front, .card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Ön Yüz Renk ve Tasarım */
+.card-front {
+    background: linear-gradient(135deg, #4e73df, #1e2a47);
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 15px;
+    flex-direction: column; /* Vertikal hizalama */
+    justify-content: flex-start; /* Başlıklar üstte */
+}
+
+/* Arka Yüz Renk ve Tasarım */
+.card-back {
+    background-color: #1e2a47;
+    color: white;
+    transform: rotateY(180deg);
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+/* Kart Numarası */
+.card-number {
+    font-size: 1.5em;
+    letter-spacing: 3px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Kart Sahibi Adı */
+.card-holder {
+    font-size: 1.3em;
+    font-weight: 600;
+    margin: 5px 0;
+}
+
+/* Son Kullanma Tarihi */
+.card-back .expiry-label {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.card-back .expiry {
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+/* CVV Görünümü */
+.cvv {
+    margin-top: 15px;
+    font-size: 1.1em;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal tasarımı */
+.modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+}
+
+    .modal .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .modal label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+    }
+
+    .modal input {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .modal button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+        .modal button:hover {
+            background-color: #45a049;
+        }
+/* Kart İşlemleri (Düzenle, Sil) */
+.card .actions {
+    display: flex;
+    justify-content: center;
+    margin-top: -30px; /* Move buttons higher */
+    z-index: 1;
+}
+
+    .card .actions button {
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-weight: bold;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        margin: 0 10px;
+    }
+
+        .card .actions button.edit {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .card .actions button.delete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .card .actions button:hover {
+            transform: translateY(-2px);
+        }
+
+        .card .actions button.edit:hover {
+            background-color: #e0a800;
+        }
+
+        .card .actions button.delete:hover {
+            background-color: #c82333;
+        }
+
+.card:hover .card-inner {
+    transform: rotateY(180deg);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Kart Üzerindeki Hover Animasyonu */
+.card:hover .card-back .cvv {
+    display: block;
+}

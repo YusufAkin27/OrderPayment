@@ -1,0 +1,89 @@
+﻿/* Genel Stil */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #222222, #1a1a1a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #f0f0f0; /* Daha açık metin rengi */
+}
+
+.container {
+    background-color: #333333;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+    max-width: 400px;
+    width: 100%;
+}
+
+/* Başlık */
+h1 {
+    font-size: 24px;
+    color: #ff9800; /* Vurgulu başlık rengi */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Form Alanı */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+    /* Form Inputları */
+    form .form-control {
+        border: 1px solid #555555;
+        border-radius: 4px;
+        padding: 10px;
+        font-size: 14px;
+        color: #f0f0f0; /* Açık metin rengi */
+        background-color: aliceblue; /* Daha koyu arka plan */
+        margin-bottom: 15px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+        form .form-control:focus {
+            border-color: #ff9800;
+            box-shadow: 0 0 5px rgba(255, 152, 0, 0.6);
+            outline: none;
+        }
+
+/* Kayıt Ol Butonu */
+button[type="submit"] {
+    background-color: #ff9800;
+    color: #222222;
+    border: none;
+    border-radius: 4px;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+    button[type="submit"]:hover {
+        background-color: #e68900;
+        transform: scale(1.05);
+    }
+
+/* Ek Bağlantılar */
+.additional-links {
+    text-align: center;
+    font-size: 14px;
+    color: #e0e0e0; /* Açık metin rengi */
+}
+
+    .additional-links a {
+        color: #ff9800;
+        text-decoration: none;
+        font-weight: bold;
+        transition: color 0.2s ease;
+    }
+
+        .additional-links a:hover {
+            color: #e68900;
+        }

@@ -1,0 +1,187 @@
+﻿/* Genel Sayfa Ayarları */
+body {
+    background: linear-gradient(135deg, #1d3557, #457b9d); /* Arka plan gradyanı */
+    color: #f1faee; /* Genel yazı rengi */
+    font-family: 'Poppins', Arial, sans-serif; /* Tutarlı font */
+    margin-top: 56px; /* Navbar yüksekliği kadar üstten boşluk bırakır */
+}
+
+
+
+
+footer {
+    background: #1d3557; /* Footer arka plan */
+    color: #f1faee; /* Footer yazı rengi */
+    border-top: 2px solid #457b9d;
+    text-align: center;
+    padding: 15px 0;
+}
+
+/* Sepet Konteyneri */
+.cart-container {
+    width: 90%;
+    max-width: 1100px;
+    margin: 100px auto;
+    padding: 30px;
+    background: linear-gradient(145deg, #a8dadc, #f1faee); /* Gradyan arka plan */
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3); /* Hafif gölge */
+}
+
+    /* Başlıklar */
+    .cart-container h1 {
+        font-size: 2.2rem;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #1d3557;
+    }
+
+/* Sepet Ürünleri */
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top:10px;
+}
+
+.cart-item {
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #457b9d; /* Ayrıcı çizgi */
+    padding-bottom: 15px;
+    padding-top: 10px;
+}
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+.product-image {
+    width: 75px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #f1faee;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Detaylar */
+.item-details {
+    flex: 1;
+    padding: 0 15px;
+}
+
+    .item-details h2 {
+        font-size: 1.3rem;
+        margin: 0 0 10px;
+        color: #1d3557;
+    }
+
+    .item-details p {
+        margin: 3px 0;
+        font-size: 0.95rem;
+        color: #457b9d;
+    }
+
+/* Fiyatlar ve Butonlar */
+.price {
+    color: #e63946;
+    font-weight: bold;
+}
+
+.btn-change-quantity {
+    background: linear-gradient(135deg, #457b9d, #e63946); /* Gradyan arka plan */
+    color: #f1faee; /* Yazı rengi */
+    border: none; /* Kenarlık yok */
+    padding: 3px 8px; /* Daha küçük boyut */
+    border-radius: 4px; /* Hafif yuvarlak köşeler */
+    font-size: 0.9rem; /* Daha küçük yazı boyutu */
+    margin: 0 2px; /* Butonlar arasındaki boşluk */
+    cursor: pointer; /* İşaretçi değişimi */
+    width: 40px; /* Standart buton genişliği */
+    height: 30px; /* Yükseklik */
+    display: flex; /* İçeriği hizalama */
+    justify-content: center; /* Yatay ortalama */
+    align-items: center; /* Dikey ortalama */
+}
+
+    .btn-change-quantity:hover {
+        background: linear-gradient(135deg, #e63946, #457b9d); /* Hover efekti */
+    }
+
+
+.btn-remove {
+    background: #e63946;
+    color: #f1faee;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    width:80px;
+    height:60px;
+}
+
+    .btn-remove:hover {
+        background: #c0392b;
+    }
+
+/* Sepet Özeti */
+.cart-summary {
+    background: #1d3557;
+    color: #f1faee;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+    .cart-summary h3 {
+        font-size: 1.8rem;
+        margin-bottom: 10px;
+    }
+
+    .cart-summary p {
+        font-size: 1.2rem;
+    }
+
+#totalAmount {
+    color: #e63946;
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.btn-complete-order {
+    background: linear-gradient(135deg, #2ecc71, #1d3557);
+    color: #f1faee;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+    .btn-complete-order:hover {
+        background: linear-gradient(135deg, #1d3557, #2ecc71);
+    }
+
+/* Responsive Ayarları */
+@media (max-width: 768px) {
+    .cart-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .product-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .cart-summary {
+        margin-top: 20px;
+    }
+
+    .btn-complete-order {
+        width: 100%;
+    }
+}

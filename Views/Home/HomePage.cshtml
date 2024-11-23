@@ -1,0 +1,50 @@
+﻿@model IEnumerable<OrderPayment.Models.Product>
+
+
+@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ürün Listesi</title>
+    <link rel="stylesheet" href="~/css/Home/HomePage.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="page-title text-center">Ürün Listesi</h2>
+
+        <!-- Arama Alanı -->
+        <div class="search-container mb-5 d-flex justify-content-center align-items-center">
+            <div class="input-group" style="max-width: 600px;">
+                <input type="text" id="product-search" class="form-control" placeholder="Ürün Ara" aria-label="Search">
+            </div>
+        </div>
+
+        <!-- Ürün Listesi -->
+        <div id="product-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card">
+                    <div class="card-image">
+                        <img src="@product.Image" alt="@product.Name" class="product-image" />
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-price">@product.Price.ToString("C")</p>
+                        <p class="card-category">Kategori: @product.Category</p>
+                        <p class="card-quantity">Miktar: @product.Quantity @product.Unit</p>
+                        <button class="btn add-to-cart-btn" data-product-id="@product.Id">Sepete Ekle</button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Home/HomePage.js"></script>
+</body>
+</html>

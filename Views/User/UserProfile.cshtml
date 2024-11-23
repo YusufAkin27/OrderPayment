@@ -1,0 +1,64 @@
+﻿@model UserProfileViewModel
+@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Profil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="~/css/User/UserProfile.css">
+</head>
+<body>
+    <div class="profile-container">
+        <h1>Kullanıcı Profil</h1>
+        <form id="profile-form" class="profile-form">
+            <div class="form-group">
+                <label for="firstName">Ad</label>
+                <input type="text" id="firstName" value="@Model.FirstName" disabled />
+            </div>
+            <div class="form-group">
+                <label for="lastName">Soyad</label>
+                <input type="text" id="lastName" value="@Model.LastName" disabled />
+            </div>
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="text" id="password" value="@Model.Password" disabled />
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Telefon</label>
+                <input type="text" id="phoneNumber" value="@Model.PhoneNumber" disabled />
+            </div>
+            <div class="form-group">
+                <label for="createdAt">Üyelik Tarihi</label>
+                <input type="text" id="createdAt" value="@Model.CreatedAt" disabled />
+            </div>
+            <div class="form-group">
+                <label for="isActive">Aktif Mi?</label>
+                <input type="text" id="isActive" value="@(Model.IsActive ? "Evet" : "Hayır")" disabled />
+            </div>
+        </form>
+
+        <!-- Düzenle Butonu -->
+        <a id="edit-profile-button" href="javascript:void(0);" class="edit-button">
+            <i class="fas fa-edit"></i> Profili Düzenle
+        </a>
+
+        <!-- Yeni mesaj göstermek için bir div -->
+        <div id="status-message" class="status-message"></div>
+
+        <!-- Hesabımı Sil Butonu - Farklı alanda -->
+        <div class="delete-container">
+            <a id="delete-profile-button" href="javascript:void(0);" class="delete-button">
+                <i class="fas fa-trash-alt"></i> Hesabımı Sil
+            </a>
+        </div>
+    </div>
+
+    <script src="~/js/User/UserProfile.js"></script>
+</body>
+</html>

@@ -1,0 +1,217 @@
+﻿/* Genel Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a1a1a, #222222);
+    color: #ffffff;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    transition: background-color 0.3s ease;
+}
+
+.btn-secondary {
+    background: #555;
+    color: #fff;
+}
+
+    .btn-secondary:hover {
+        background: #777;
+    }
+
+.btn-primary {
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn-primary:hover {
+        background: #ff7f00;
+    }
+
+/* Ana Konteyner */
+.container {
+    background: #2e2e2e;
+    border-radius: 12px;
+    padding: 30px 20px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+    width: 90%;
+    max-width: 550px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+h2 {
+    font-size: 2rem;
+    color: #ff9800;
+    margin-bottom: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Form ve Input Alanları */
+form {
+    display: grid;
+    gap: 15px;
+    text-align: left;
+}
+
+label {
+    font-size: 0.9rem;
+    color: #ff9800;
+    margin-bottom: 6px;
+    display: block;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: none;
+    outline: none;
+    background: #1f1f1f;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+    input:focus, textarea:focus {
+        background: #333333;
+        box-shadow: 0 4px 10px rgba(255, 152, 0, 0.5);
+        border: 1px solid #ff9800;
+    }
+
+textarea {
+    resize: none;
+    min-height: 100px;
+}
+
+    /* Placeholder Stili */
+    input::placeholder, textarea::placeholder {
+        color: #888;
+        font-style: italic;
+    }
+
+/* Hata Mesajları */
+.text-danger {
+    color: #ff4d4d;
+    font-size: 0.8rem;
+}
+
+.back-button {
+    position: fixed; /* Sabit bir pozisyonda yer alır */
+    top: 20px; /* Üstten 20px boşluk */
+    left: 20px; /* Sağdan 20px boşluk */
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    background: #555; /* Düğme arka plan rengi */
+    color: #fff;
+    transition: background-color 0.3s ease;
+    z-index: 1000; /* Üstte görünmesi için z-index ekledik */
+}
+
+    .back-button:hover {
+        background: #777; /* Hover durumunda renk değişimi */
+    }
+
+
+.btn-secondary {
+    display: inline-block;
+    background: #555;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-decoration: none;
+    transition: 0.3s ease;
+}
+
+    .btn-secondary:hover {
+        background: #777;
+    }
+
+/* Buton Stili */
+button {
+    padding: 12px 25px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 40px;
+    background: linear-gradient(135deg, #ff9800, #ff7f00);
+    color: #fff;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 12px rgba(255, 152, 0, 0.5);
+}
+
+    button:hover {
+        background: linear-gradient(135deg, #ff7f00, #ff9800);
+        transform: scale(1.05);
+        box-shadow: 0 8px 15px rgba(255, 152, 0, 0.6);
+    }
+
+    button:active {
+        transform: scale(0.95);
+    }
+
+    /* İkonlar için Stiller */
+    button i {
+        margin-right: 8px;
+    }
+
+/* Animasyon */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Tasarım */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+        max-width: 90%;
+    }
+
+    h2 {
+        font-size: 1.8rem;
+    }
+
+    input, textarea {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+    }
+}

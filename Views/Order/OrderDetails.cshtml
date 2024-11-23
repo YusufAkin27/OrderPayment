@@ -1,0 +1,56 @@
+﻿@model OrderPayment.Models.Order
+@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+    <link href="~/css/Order/OrderDetails.css" rel="stylesheet" type="text/css" />
+
+
+<div class="orders-container">
+    <h2>Sipariş Detayları</h2>
+
+    <div class="order-summary">
+        <p><strong>Sipariş ID:</strong> @Model.OrderId</p>
+        <p><strong>Tarih:</strong> @Model.OrderDate.ToString("dd.MM.yyyy")</p>
+        <p><strong>Durum:</strong> @Model.Status</p>
+        <p><strong>Toplam Tutar:</strong> @Model.TotalAmount.ToString("C")</p>
+    </div>
+
+    <h3>Ürünler</h3>
+    <table class="table orders-table">
+        <thead>
+            <tr>
+                <th>Ürün Adı</th>
+                <th>Adet</th>
+                <th>Birim Fiyatı</th>
+                <th>Toplam Fiyat</th>
+                <th>Ürün Resmi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.OrderItems)
+            {
+                <tr>
+                    <td>@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice.ToString("C")</td>
+                    <td>@item.TotalPrice.ToString("C")</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.ProductImage))
+                        {
+                            <img src="@item.ProductImage" alt="@item.ProductName" class="product-image" />
+                        }
+                        else
+                        {
+                            <span>Resim Yok</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="back-button">
+        <a href="@Url.Action("UserGetOrders", "Order")" class="btn btn-secondary">Tüm Siparişlere Dön</a>
+    </div>
+</div>

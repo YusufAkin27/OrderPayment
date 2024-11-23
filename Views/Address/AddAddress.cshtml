@@ -1,0 +1,96 @@
+﻿@model OrderPayment.Models.Request.CreateAddressRequest
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Adres Ekle</title>
+    <link rel="stylesheet" href="~/css/Address/AddAddress.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="back-button">
+        <a href="@Url.Action("GetAllAddresses", "Address")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Geri
+        </a>
+    </div>
+
+    <div class="container">
+        <form id="addAddressForm">
+            <!-- Adres Başlığı -->
+            <div class="form-group">
+                <label for="AddressTitle">
+                    <i class="fas fa-tag"></i> Adres Başlığı:
+                </label>
+                <input type="text" id="AddressTitle" name="AddressTitle" value="@Model.AddressTitle" class="form-control" required />
+                <span class="text-danger" id="AddressTitleError">@Html.ValidationMessageFor(m => m.AddressTitle)</span>
+            </div>
+
+            <!-- Sokak Adresi -->
+            <div class="form-group">
+                <label for="StreetAddress">
+                    <i class="fas fa-road"></i> Sokak Adresi:
+                </label>
+                <input type="text" id="StreetAddress" name="StreetAddress" value="@Model.StreetAddress" class="form-control" required />
+                <span class="text-danger" id="StreetAddressError">@Html.ValidationMessageFor(m => m.StreetAddress)</span>
+            </div>
+
+            <!-- Mahalle/Belde -->
+            <div class="form-group">
+                <label for="Neighborhood">
+                    <i class="fas fa-home"></i> Mahalle/Belde:
+                </label>
+                <input type="text" id="Neighborhood" name="Neighborhood" value="@Model.Neighborhood" class="form-control" required />
+                <span class="text-danger" id="NeighborhoodError">@Html.ValidationMessageFor(m => m.Neighborhood)</span>
+            </div>
+
+            <!-- İlçe -->
+            <div class="form-group">
+                <label for="District">
+                    <i class="fas fa-city"></i> İlçe:
+                </label>
+                <input type="text" id="District" name="District" value="@Model.District" class="form-control" required />
+                <span class="text-danger" id="DistrictError">@Html.ValidationMessageFor(m => m.District)</span>
+            </div>
+
+            <!-- Şehir -->
+            <div class="form-group">
+                <label for="City">
+                    <i class="fas fa-building"></i> Şehir:
+                </label>
+                <input type="text" id="City" name="City" value="@Model.City" class="form-control" required />
+                <span class="text-danger" id="CityError">@Html.ValidationMessageFor(m => m.City)</span>
+            </div>
+
+            <!-- Adres Açıklaması -->
+            <div class="form-group">
+                <label for="AddressDescription">
+                    <i class="fas fa-pencil-alt"></i> Adres Açıklaması:
+                </label>
+                <textarea id="AddressDescription" name="AddressDescription" class="form-control">@Model.AddressDescription</textarea>
+                <span class="text-danger" id="AddressDescriptionError">@Html.ValidationMessageFor(m => m.AddressDescription)</span>
+            </div>
+
+            <!-- Telefon Numarası -->
+            <div class="form-group">
+                <label for="PhoneNumber">
+                    <i class="fas fa-phone-alt"></i> Telefon Numarası:
+                </label>
+                <input type="tel" id="PhoneNumber" name="PhoneNumber" value="@Model.PhoneNumber" pattern="[0-9]{10}" placeholder="0XXXXXXXXX" class="form-control" required />
+                <span class="text-danger" id="PhoneNumberError">@Html.ValidationMessageFor(m => m.PhoneNumber)</span>
+            </div>
+
+            <!-- Submit Butonu -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Adres Ekle
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="~/js/Address/AddAddress.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+</body>
+</html>

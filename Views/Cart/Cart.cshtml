@@ -1,0 +1,62 @@
+﻿@model OrderPayment.Models.Cart
+@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Ticaret Sepet Sayfası</title>
+    <link rel="stylesheet" href="~/css/Cart/Cart.css">
+</head>
+<body>
+    <div class="cart-container">
+        <h1>Sepetiniz</h1>
+
+        <!-- Sepetteki Ürünler -->
+        <div class="cart-items">
+            @if (Model.CartItems != null && Model.CartItems.Count > 0)
+            {
+                foreach (var item in Model.CartItems)
+                {
+                    <div class="cart-item" id="item-@item.Product.Id">
+                        <img src="@item.Product.Image" alt="@item.Product.Name" class="product-image" />
+                        <div class="item-details">
+                            <h2>@item.Product.Name</h2>
+                            <p>Kategori: <strong>@item.Product.Category</strong></p>
+                            <p>Birim Fiyat: <span class="price" id="price-@item.Product.Id" data-price="@item.Product.Price">@item.Product.Price</span> TL</p>
+                            <p>
+                                Miktar:
+                                <button class="btn-change-quantity" onclick="changeQuantity(@item.Product.Id, -1)">-</button>
+                                <span id="quantity-@item.Product.Id">@item.Quantity</span>
+                                <button class="btn-change-quantity" onclick="changeQuantity(@item.Product.Id, 1)">+</button>
+                            </p>
+                            <p>Toplam Fiyat: <span id="total-price-@item.Product.Id">@string.Format("{0:0.00}", item.Product.Price * item.Quantity)</span> TL</p>
+                            <button class="btn-remove" onclick="removeItem(@item.Product.Id)">Ürünü Kaldır</button>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <p>Sepetinizde ürün bulunmamaktadır.</p>
+            }
+        </div>
+
+        <!-- Sepet Toplamı -->
+        <div class="cart-summary">
+            <h3>Toplam Tutar</h3>
+            <p><strong>Toplam: <span id="totalAmount">@Model.TotalAmount.ToString("C")</span></strong></p>
+
+            <!-- Siparişi Tamamla Butonu -->
+            <button class="btn-complete-order" onclick="window.location.href='@Url.Action("SelectionAddress", "Order")'">Siparişi Tamamla</button>
+        </div>
+    </div>
+
+    <script src="~/js/Cart/CartPage.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+</body>
+</html>

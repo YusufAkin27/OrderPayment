@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıtlı Kartlar</title>
+    <link rel="stylesheet" href="~/css/UserCard/GetAllCards.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Yeni Kart Ekle Butonu -->
+        <div class="new-card-btn">
+            <a href="@Url.Action("AddCard", "UserCard")">Yeni Kart Ekle</a>
+        </div>
+
+        <h2>Kayıtlı Kartlar</h2>
+
+        @if (Model != null && Model.Count > 0)
+        {
+            <div class="card-list">
+                @foreach (var card in Model)
+                {
+                    <div class="card" id="card-@card.Id">
+                        <div class="actions">
+                            <button class="edit" onclick="editCard(@card.Id)">Düzenle</button>
+                            <button class="delete" onclick="deleteCard(@card.Id)">Sil</button>
+                        </div>
+
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-number">
+                                    @card.CardNumber.Substring(card.CardNumber.Length - 4).PadLeft(card.CardNumber.Length, '*')
+                                </div>
+                                <div class="card-holder">@card.CardHolderName</div>
+                            </div>
+                            <div class="card-back">
+                                <div class="expiry-label">Son Kullanma Tarihi:</div>
+                                <div class="expiry">@card.ExpiryMonth/@card.ExpiryYear</div>
+                                @if (!string.IsNullOrEmpty(card.CVV))
+                                {
+                                    <div class="cvv">CVV: @card.CVV</div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p>Kullanıcıya ait kart bulunmamaktadır.</p>
+        }
+
+        <!-- Düzenleme Modalı -->
+        <div id="editCardModal" class="modal">
+            <span class="close" onclick="closeModal()">×</span>
+            <h3>Kart Bilgilerini Düzenle</h3>
+            <form id="editCardForm">
+                <input type="hidden" id="editCardId" name="id" />
+                <label>Kart Sahibi:</label>
+                <input type="text" id="editCardHolderName" name="cardHolderName" required />
+                <label>Kart Numarası:</label>
+                <input type="text" id="editCardNumber" name="cardNumber" maxlength="16" required />
+                <label>Son Kullanma Ayı:</label>
+                <input type="number" id="editExpiryMonth" name="expiryMonth" min="1" max="12" required />
+                <label>Son Kullanma Yılı:</label>
+                <input type="number" id="editExpiryYear" name="expiryYear" min="2023" required />
+                <label>CVV:</label>
+                <input type="text" id="editCvv" name="cvv" maxlength="3" required />
+                <button type="button" onclick="submitCardUpdate()">Güncelle</button>
+            </form>
+        </div>
+    </div>
+
+   <script src="~/js/UserCard/GetAllCards.js"></script>
+</body>
+</html>

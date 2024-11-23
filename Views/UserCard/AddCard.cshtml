@@ -1,0 +1,94 @@
+﻿@model OrderPayment.Models.Request.CreateUserCardRequest
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yeni Kart Ekle</title>
+    <link rel="stylesheet" href="~/css/UserCard/AddCard.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Yeni Kart Ekle</h2>
+        <form id="addCardForm">
+            <div>
+                <label for="CardNumber">Kart Numarası:</label>
+                <input type="text" id="CardNumber" name="CardNumber" required />
+                <span class="text-danger" id="CardNumberError"></span>
+            </div>
+            <div>
+                <label for="CardHolderName">Kart Sahibi:</label>
+                <input type="text" id="CardHolderName" name="CardHolderName" required />
+                <span class="text-danger" id="CardHolderNameError"></span>
+            </div>
+            <div>
+                <label for="ExpiryMonth">Son Kullanma Ayı:</label>
+                <input type="number" id="ExpiryMonth" name="ExpiryMonth" required />
+                <span class="text-danger" id="ExpiryMonthError"></span>
+            </div>
+            <div>
+                <label for="ExpiryYear">Son Kullanma Yılı:</label>
+                <input type="number" id="ExpiryYear" name="ExpiryYear" required />
+                <span class="text-danger" id="ExpiryYearError"></span>
+            </div>
+            <div>
+                <label for="CVV">CVV:</label>
+                <input type="text" id="CVV" name="CVV" required />
+                <span class="text-danger" id="CVVError"></span>
+            </div>
+            <div>
+                <button type="button" id="submitCard" class="btn btn-primary">Kartı Ekle</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("submitCard").addEventListener("click", async () => {
+            // Form alanlarını al ve form verilerini hazırla
+            const formData = {
+                CardNumber: document.getElementById("CardNumber").value.trim(),
+                CardHolderName: document.getElementById("CardHolderName").value.trim(),
+                ExpiryMonth: document.getElementById("ExpiryMonth").value.trim(),
+                ExpiryYear: document.getElementById("ExpiryYear").value.trim(),
+                CVV: document.getElementById("CVV").value.trim(),
+            };
+
+            // Önce boş alanları kontrol et
+            for (const key in formData) {
+                if (!formData[key]) {
+                    alert(`${key} alanı boş bırakılamaz!`);
+                    return;
+                }
+            }
+
+            try {
+                // Fetch API ile POST isteği gönder
+                const response = await fetch('@Url.Action("AddCard", "UserCard")', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                // Yanıtı işle
+                if (response.ok) {
+                    alert("Kart başarıyla eklendi!");
+                    // Kart ekleme başarılıysa yönlendir
+                    window.location.href = "/UserCard/GetAllCards";
+                } else {
+                    // Sunucudan dönen hatayı işle
+                    const errorData = await response.json();
+                    alert(errorData.message || "Bir hata oluştu!");
+                }
+            } catch (error) {
+                // Ağ hatalarını ele al
+                console.error("Hata:", error);
+                alert("Bir hata oluştu. Lütfen daha sonra tekrar deneyin.");
+            }
+        });
+
+    </script>
+</body>
+</html>

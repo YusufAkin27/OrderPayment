@@ -1,0 +1,188 @@
+﻿/* Genel Ayarlar */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1d3557, #457b9d);
+    color: #f0f0f0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Footer */
+footer {
+    background: #1d3557; /* Footer arka plan */
+    color: #f1faee; /* Footer yazı rengi */
+    border-top: 2px solid #457b9d;
+    text-align: center;
+    padding: 15px 0;
+}
+
+/* Profil Başlık Sabitleme */
+.profile-container {
+    background: #333333;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+    position: relative;
+    z-index: 1;
+    margin-top: 80px; /* Başlık sabitlendiyse, içerik biraz aşağıya kayar */
+}
+
+
+    .profile-container:hover {
+        transform: scale(1.02);
+    }
+
+/* Başlık */
+h1 {
+    font-size: 28px;
+    color: #ff9800;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+/* Profil Formu */
+.profile-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: left;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+    .form-group label {
+        font-size: 14px;
+        margin-bottom: 8px;
+        color: #ccc;
+    }
+
+    .form-group input {
+        padding: 12px;
+        font-size: 16px;
+        border: 1px solid #555;
+        border-radius: 5px;
+        background-color: #444;
+        color: #fff;
+        transition: background-color 0.3s ease;
+    }
+
+        .form-group input:disabled {
+            background-color: #555;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            background-color: #555;
+            border-color: #ff9800;
+        }
+
+/* Düzenle Butonu */
+.edit-button {
+    display: inline-block;
+    background: #ff9800;
+    color: #222222;
+    padding: 12px 25px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    margin-top: 25px;
+    transition: background 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+    .edit-button:hover {
+        background: #e68900;
+        transform: scale(1.05);
+    }
+
+/* Hesabımı Sil Butonu */
+.delete-container {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.delete-button {
+    display: inline-block;
+    background-color: #e74c3c;
+    color: white;
+    padding: 12px 25px;
+    font-size: 16px;
+    text-align: center;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .delete-button:hover {
+        background-color: #c0392b;
+        transform: scale(1.05);
+    }
+
+    .delete-button i {
+        margin-right: 8px;
+    }
+
+/* Mesaj Kutusu */
+/* Mesaj Kutusu */
+.status-message {
+    position: fixed; /* Sabit pozisyon */
+    top: 20px; /* Üstten 20px mesafe */
+    right: 20px; /* Sağdan 20px mesafe */
+    padding: 15px;
+    border-radius: 5px;
+    display: none; /* Başlangıçta gizli */
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    z-index: 1000; /* Üstte görünmesini sağlar */
+}
+
+    /* Hata mesajı */
+    .status-message.error {
+        background-color: #e74c3c; /* Hata durumunda kırmızı */
+    }
+
+    /* Başarı mesajı */
+    .status-message.success {
+        background-color: #27ae60; /* Başarılı mesaj */
+    }
+
+/* Mobil Uyumlu Tasarım */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 25px;
+    }
+
+    .profile-form {
+        gap: 15px;
+    }
+
+    .edit-button, .delete-button {
+        width: 100%;
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+}

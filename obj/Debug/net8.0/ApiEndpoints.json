@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "Server.Controllers.PaymentsController",
+    "Method": "Pay",
+    "RelativePath": "api/Payments/Pay",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Server.Controllers.PaymentsController",
+    "Method": "PayCallBack",
+    "RelativePath": "api/Payments/PayCallBack",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "collections",
+        "Type": "Microsoft.AspNetCore.Http.IFormCollection",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  }
+]

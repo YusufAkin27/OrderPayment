@@ -1,0 +1,74 @@
+﻿@model List<OrderPayment.Models.Order>
+@{
+    Layout = "~/Views/Shared/_HomeLayout.cshtml";
+}
+
+
+<link href="~/css/Order/UserGetOrder.css" rel="stylesheet" type="text/css" />
+
+<div class="orders-container">
+    <h2>Siparişlerim</h2>
+
+    @if (!Model.Any())
+    {
+        <p class="no-orders">Henüz bir siparişiniz bulunmamaktadır.</p>
+    }
+    else
+    {
+        <table class="table orders-table">
+            <thead>
+                <tr>
+                    <th>Sipariş ID</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th>Toplam Tutar</th>
+                    <th></th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.OrderDate.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            <span class="status-label @order.Status.ToString().ToLower()">
+                                @order.Status.ToString()
+                            </span>
+                        </td>
+                        <td>@order.TotalAmount.ToString("C")</td>
+                        <td>
+                            @foreach (var item in order.OrderItems)
+                            {
+                                <div class="order-item">
+                                    <strong>@item.ProductName</strong> - Adet: @item.Quantity,
+                                    Birim: @item.UnitPrice.ToString("C"),
+                                    Toplam: @item.TotalPrice.ToString("C")
+                                </div>
+                            }
+                        </td>
+                        <td class="actions">
+                            <!-- Detaylar Butonu -->
+                            <button class="btn btn-info" data-order-id="@order.OrderId">Detaylar</button>
+
+                            <!-- Siparişi iptal etme butonu sadece belirli durumlar için -->
+                            @if (order.Status == OrderPayment.Models.OrderStatus.Beklemede ||
+                           order.Status == OrderPayment.Models.OrderStatus.Onaylandi ||
+                           order.Status == OrderPayment.Models.OrderStatus.Kargolandı)
+                            {
+                                <button class="btn btn-danger" data-order-id="@order.OrderId">İptal Et</button>
+                            }
+                            else
+                            {
+                                <span class="text-muted">İptal Edilemez</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+    <script src="~/js/Order/UserGetOrders.js"></script>
+
